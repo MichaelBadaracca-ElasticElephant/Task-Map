@@ -6,4 +6,5 @@ header{
 }
 #task-list{
     height:90vh;
+    overflow-y:scroll;
 }
