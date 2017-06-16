@@ -1,0 +1,9 @@
+section{
+    border: 1px grey solid;
+}
+header{
+    height:5vh;
+}
+#task-list{
+    height:90vh;
+}

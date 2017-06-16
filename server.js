@@ -1,6 +1,10 @@
-var express = require('express')
-var app = express()
+var express = require( 'express' );
+var app = express();
 
-app.use(express.static('./'))
+app.use( express.static( './' ) );
 
-app.listen(3000)
+
+//TODO: Make a 404 route
+//TODO: Make a 500 error route
+
+app.listen( 3000 );
