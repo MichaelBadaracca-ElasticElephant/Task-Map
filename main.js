@@ -81,9 +81,7 @@ var mainAppVm = new Vue( {
     },
 
     computed: {
-        //selectedTask: function () {
-        //    return this.taskList[0];
-        //}
+
     },
     methods: {
         getPlacesScript: function () {
@@ -107,34 +105,14 @@ var mainAppVm = new Vue( {
             // location types.
             autocomplete = new google.maps.places.Autocomplete(
             /** @type {!HTMLInputElement} */( document.getElementById( 'autocomplete' ) ),
-                { types: ['geocode'] });
+                { types: [] });
 
-            // When the user selects an address from the dropdown, populate the address
-            // fields in the form.
-            //autocomplete.addListener( 'place_changed', this.fillInAddress );
+            // When the user selects an address from the dropdown, populate the address in the corresponding task
+            autocomplete.addListener( 'place_changed', this.fillInAddress );
         },
-        //fillInAddress: function () {
-        //    // Get the place details from the autocomplete object.
-        //    var place = autocomplete.getPlace();
-
-        //    for ( var component in componentForm ) {
-        //        document.getElementById( component ).value = '';
-        //        document.getElementById( component ).disabled = false;
-        //    }
-
-        //    // Get each component of the address from the place details
-        //    // and fill the corresponding field on the form.
-        //    for ( var i = 0; i < place.address_components.length; i++ ) {
-        //        var addressType = place.address_components[i].types[0];
-        //        if ( componentForm[addressType] ) {
-        //            var val = place.address_components[i][componentForm[addressType]];
-        //            document.getElementById( addressType ).value = val;
-        //        }
-        //    }
-        //},
-        // Bias the autocomplete object to the user's geographical location,
-        // as supplied by the browser's 'navigator.geolocation' object.
         geolocate: function () {
+            // Bias the autocomplete object to the user's geographical location,
+            // as supplied by the browser's 'navigator.geolocation' object.
             if ( navigator.geolocation ) {
                 navigator.geolocation.getCurrentPosition( function ( position ) {
                     var geolocation = {
@@ -148,6 +126,12 @@ var mainAppVm = new Vue( {
                     autocomplete.setBounds( circle.getBounds() );
                 });
             }
+        },
+        fillInAddress: function () {
+            var place = autocomplete.getPlace();
+            this.selectedTask.address = place.formatted_address;
+            this.selectedTask.locationName = place.name;
+
         },
         newTask: function () {
 
