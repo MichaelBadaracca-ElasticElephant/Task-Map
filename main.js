@@ -13,14 +13,14 @@ var item = Vue.component( 'task', {
     },
     props: ['task'],
     computed: {
-        
+
     },
     methods: {
         removeTask: function ( task ) {
             this.$emit( 'remove-task', task );
         },
         selectTask: function ( task ) {
-            console.log("Select Task from component")
+            console.log( "Select Task from component" )
             this.$emit( 'select-task', task );
         }
     }
@@ -32,17 +32,19 @@ var mainAppVm = new Vue( {
     data: {
 
         selectedTask: {},
+        placesSearch: {},
+        autocomplete: {},
         taskList: [
             //Create Task
             {
-                id:1,
+                id: 1,
                 title: "Pick Up Package",
                 description: "Pick up package from post office",
                 date: "6/18/2017",
                 time: "1:30 pm",
                 duration: 0.25,
                 locationName: "Moorehad Post Office",
-                address:"4985 Moorhead Ave, Boulder, CO 80305"
+                address: "4985 Moorhead Ave, Boulder, CO 80305"
             },
             {
                 id: 2,
@@ -89,8 +91,63 @@ var mainAppVm = new Vue( {
                 var googlePlacesApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
                 $.getScript( googlePlacesApiScript, function () {
                     console.log( "Google places script loaded" );
+                    // Initialize Autocomplete once the script is loaded
+                    // Need to reference as mainAppVm rather than this, because it is being called outside of the Vue scope
+                    mainAppVm.initAutocomplete();
+                    
                 });
             });
+        },
+        testFunction: function () {
+            console.log( "Test function" );
+        },
+        initAutocomplete: function () {
+            // Referencing Google API documentation found here: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-addressform?authuser=1
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */( document.getElementById( 'autocomplete' ) ),
+                { types: ['geocode'] });
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            //autocomplete.addListener( 'place_changed', this.fillInAddress );
+        },
+        //fillInAddress: function () {
+        //    // Get the place details from the autocomplete object.
+        //    var place = autocomplete.getPlace();
+
+        //    for ( var component in componentForm ) {
+        //        document.getElementById( component ).value = '';
+        //        document.getElementById( component ).disabled = false;
+        //    }
+
+        //    // Get each component of the address from the place details
+        //    // and fill the corresponding field on the form.
+        //    for ( var i = 0; i < place.address_components.length; i++ ) {
+        //        var addressType = place.address_components[i].types[0];
+        //        if ( componentForm[addressType] ) {
+        //            var val = place.address_components[i][componentForm[addressType]];
+        //            document.getElementById( addressType ).value = val;
+        //        }
+        //    }
+        //},
+        // Bias the autocomplete object to the user's geographical location,
+        // as supplied by the browser's 'navigator.geolocation' object.
+        geolocate: function () {
+            if ( navigator.geolocation ) {
+                navigator.geolocation.getCurrentPosition( function ( position ) {
+                    var geolocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    var circle = new google.maps.Circle( {
+                        center: geolocation,
+                        radius: position.coords.accuracy
+                    });
+                    autocomplete.setBounds( circle.getBounds() );
+                });
+            }
         },
         newTask: function () {
 
@@ -121,5 +178,6 @@ var mainAppVm = new Vue( {
     created: function () {
         this.selectedTask = this.taskList[0];
         this.getPlacesScript();
+        
     }
 })
