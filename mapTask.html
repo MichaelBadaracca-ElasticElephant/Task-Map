@@ -29,7 +29,7 @@
             <section id="task-list" class="col-md-4">
                 <h1>{{taskList.length}} Tasks</h1>
                 <ol>
-                    <task v-for="task in taskList" v-bind:task="task"></task>
+                    <task v-for="task in taskList" v-bind:task="task" v-on:remove-task="removeTask"></task>
                 </ol>
                 <div id="task-list-end">
                     <button class="btn btn-success" v-on:click="newTask">Create Task</button>

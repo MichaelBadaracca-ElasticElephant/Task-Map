@@ -5,7 +5,7 @@ var item = Vue.component( 'task', {
                     <h3>{{task.time}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
-                    <button>Edit</button>
+                    <button v-on:click="removeTask(task)">Remove</button>
                 </li>
               `,
     data: function () {
@@ -16,6 +16,10 @@ var item = Vue.component( 'task', {
 
     },
     methods: {
+        removeTask: function ( task ) {
+            console.log( "Removing from component", task );
+            this.$emit( 'remove-task', task );
+        }
         //check to see if not enough money
         //buyItem: function ( item ) {
         //    this.$emit( 'buy-item', item )
@@ -92,6 +96,13 @@ var mainAppVm = new Vue( {
             })
             //create new task and push onto array
             //make it the selected task
+        },
+        removeTask: function ( task ) {
+            //find in list
+            //remove from it
+            console.log("Remove task", task );
+            this.taskList.splice( $.inArray( task, this.taskList ), 1 );
+
         }
     }
 })
