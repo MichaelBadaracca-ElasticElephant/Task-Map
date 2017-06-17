@@ -29,15 +29,21 @@
             <section id="task-list" class="col-md-4">
                 <h1>{{taskList.length}} Tasks</h1>
                 <ol>
-                    <task v-for="task in taskList" v-bind:task="task" v-on:remove-task="removeTask"></task>
+                    <task v-for="task in taskList" 
+                          v-bind:task="task" 
+                          v-on:remove-task="removeTask"
+                          v-on:select-task="selectTask">
+                    </task>
                 </ol>
                 <div id="task-list-end">
                     <button class="btn btn-success" v-on:click="newTask">Create Task</button>
                 </div>
             </section>
             <section id="task-details" class="col-md-8">
-                <input id="cur-task-title" type="text" placeholder="Enter task title" />
-                <textarea id="cur-task-desc"></textarea>
+                <h1>Task Details</h1>
+                <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title"/>
+                <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
+
 
                 
             </section>
