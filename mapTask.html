@@ -31,13 +31,15 @@
                 <ol>
                     <task v-for="task in taskList" v-bind:task="task"></task>
                 </ol>
-                
+                <div id="task-list-end">
+                    <button class="btn btn-success" v-on:click="newTask">Create Task</button>
+                </div>
             </section>
             <section id="task-details" class="col-md-8">
                 <input id="cur-task-title" type="text" placeholder="Enter task title" />
                 <textarea id="cur-task-desc"></textarea>
 
-                <button>Create Task</button>
+                
             </section>
 
             <section id="map"></section>

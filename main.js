@@ -5,7 +5,7 @@ var item = Vue.component( 'task', {
                     <h3>{{task.time}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
-                    <button>X</button>
+                    <button>Edit</button>
                 </li>
               `,
     data: function () {
@@ -31,13 +31,9 @@ var mainAppVm = new Vue( {
     el: '#app',
     data: {
         taskList: [
-            //{
-            //    title: "",
-            //    descrition:"",
-            //    date: "",
-            //    time: "",
-            //},
+            //Create Task
             {
+                id:1,
                 title: "Pick Up Package",
                 descrition: "Pick up package from post office",
                 date: "6/18/2017",
@@ -47,6 +43,7 @@ var mainAppVm = new Vue( {
                 address:"4985 Moorhead Ave, Boulder, CO 80305"
             },
             {
+                id: 2,
                 title: "Get Beer",
                 descrition: "Get beer for Micahl's party",
                 date: "6/18/2017",
@@ -56,6 +53,7 @@ var mainAppVm = new Vue( {
                 address: "1955 28th St, Boulder, CO 80301"
             },
             {
+                id: 3,
                 title: "Micahl's Party",
                 descrition: "Micahl's birthday party",
                 date: "6/18/2017",
@@ -65,6 +63,7 @@ var mainAppVm = new Vue( {
                 address: "1117 Pearl St, Boulder, CO 80302"
             },
             {
+                id: 4,
                 title: "Micahl's Party",
                 descrition: "Micahl's birthday party",
                 date: "6/18/2017",
@@ -80,5 +79,19 @@ var mainAppVm = new Vue( {
     computed: {
     },
     methods: {
+        newTask: function () {
+            this.taskList.push( {
+                id: this.taskList.length,
+                title: "Untitled Task",
+                descrition: "",
+                date: "",
+                time: "",
+                duration: 0,
+                locationName: "",
+                address: ""
+            })
+            //create new task and push onto array
+            //make it the selected task
+        }
     }
 })
