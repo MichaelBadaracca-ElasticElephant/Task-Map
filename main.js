@@ -84,6 +84,14 @@ var mainAppVm = new Vue( {
         //}
     },
     methods: {
+        getPlacesScript: function () {
+            $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
+                var googlePlacesApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+                $.getScript( googlePlacesApiScript, function () {
+                    console.log( "Google places script loaded" );
+                });
+            });
+        },
         newTask: function () {
 
             var newTask = {
@@ -112,5 +120,6 @@ var mainAppVm = new Vue( {
     },
     created: function () {
         this.selectedTask = this.taskList[0];
+        this.getPlacesScript();
     }
 })
