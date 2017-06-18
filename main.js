@@ -155,27 +155,11 @@ var mainAppVm = new Vue( {
             this.taskList.splice( $.inArray( task, this.taskList ), 1 );
         },
         selectTask: function ( task ) {
-            console.log( "Select class" );
             this.selectedTask = task;
         },
         initializeDatePicker: function () {
-            console.log( "Got here")
-            // initialize input widgets first
-            $( '#datepairExample .time' ).timepicker( {
-                'showDuration': true,
-                'timeFormat': 'g:ia'
-            });
-
-            $( '#datepairExample .date' ).datepicker( {
-                'format': 'yyyy-m-d',
-                'autoclose': true
-            });
-
-            // initialize datepair
-            $( '#datepairExample' ).datepair();
+            $( '#scrollDefaultExample' ).timepicker( { 'scrollDefault': 'now' });
         }
-
-
     },
     created: function () {
         this.selectedTask = this.taskList[0];
