@@ -129,22 +129,13 @@ var mainAppVm = new Vue( {
         }
     },
     methods: {
-        getPlacesScript: function () {
-            $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
-                var googlePlacesApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
-                $.getScript( googlePlacesApiScript, function () {
-                    console.log( "Google places script loaded" );
-                    // Initialize Autocomplete once the script is loaded
-                    // Need to reference as mainAppVm rather than this, because it is being called outside of the Vue scope
-                    mainAppVm.initAutocomplete();
-                });
-            });
-        },
         getMapScript: function () {
+            console.log( "GOT HERE" );
             $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
-                var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=mainAppVm.initMap`;
+                var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=mainAppVm.initMap`;
                 $.getScript( googleMapsApiScript, function ( data, textStatus, jqxhr ) {
                     console.log( "Google maps script loaded" );
+                    mainAppVm.initAutocomplete();
                 });
             });
         },
@@ -249,7 +240,6 @@ var mainAppVm = new Vue( {
     },
     created: function () {
         this.selectedTask = this.taskList[0];
-        this.getPlacesScript();
         this.getMapScript();
 
     }

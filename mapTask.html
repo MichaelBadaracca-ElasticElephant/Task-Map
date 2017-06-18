@@ -54,7 +54,7 @@
                     </span>
                     <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
                 </section>
-                    <section id="map">
+                    <section>
                         <h3>My Google Maps Demo</h3>
                         <button v-on:click="getMapScript">Get Map</button>
                         <button v-on:click="drawMap">Refresh Map</button>
@@ -62,12 +62,6 @@
                         <input type="text" v-model.number="startLng" placeholder="Starting Longitude" />{{startLng}}
 
                         <div id="map"></div>
-
-                        
-
-                        <!--TODO - Goal for weekend
-                        - Get time picker working properly
-                        - Address type ahead working properly-->
                     </section>
 
             </section>
