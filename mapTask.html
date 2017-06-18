@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="styles/jquery.timepicker.css" />
     <!--Internal Styles-->
     <link rel="stylesheet" href="taskMap.css" />
-    
+
 
     <title>TaskMap</title>
 </head>
@@ -33,8 +33,8 @@
             <section id="task-list" class="col-md-4">
                 <h1>{{taskList.length}} Tasks</h1>
                 <ol>
-                    <task v-for="task in taskList" 
-                          v-bind:task="task" 
+                    <task v-for="task in taskList"
+                          v-bind:task="task"
                           v-on:remove-task="removeTask"
                           v-on:select-task="selectTask">
                     </task>
@@ -44,25 +44,37 @@
                 </div>
             </section>
             <section id="task-details" class="col-md-8">
-                <h1>Task Details</h1>
-                <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title"/>
-                <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
-                <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
-                
-                
-                
+                <section>
+                    <h1>Task Details</h1>
+                    <span>
+                        <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title" />
+                        <input v-model="selectedTask.locationName" />
+                        <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
+                        <input id="scrollDefaultExample" v-model="selectedTask.time" type="text" />
+                    </span>
+                    <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
+                </section>
+                    <section id="map">
+                        <h3>My Google Maps Demo</h3>
+                        <button v-on:click="getMapScript">Get Map</button>
+                        <button v-on:click="drawMap">Refresh Map</button>
+                        <input type="text" v-model.number="startLat" placeholder="Starting Lattitude" /> {{startLat}}
+                        <input type="text" v-model.number="startLng" placeholder="Starting Longitude" />{{startLng}}
 
-                <input id="scrollDefaultExample" type="text"  />
+                        <div id="map"></div>
+
+                        
+
+                        <!--TODO - Goal for weekend
+                        - Get time picker working properly
+                        - Address type ahead working properly-->
+                    </section>
+
+            </section>
 
 
-
-                    <!--TODO - Goal for weekend
-            - Get time picker working properly
-            - Address type ahead working properly-->
-</section>
-
-            <section id="map"></section>
         </section>
+
 
     </div>
     <script src="/main.js"></script>
