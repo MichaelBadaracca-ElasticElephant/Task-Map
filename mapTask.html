@@ -12,11 +12,15 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
+    <script src="/scripts/jquery.timepicker.min.js"></script>
+
 
     <!--External Styles-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles/jquery.timepicker.css" />
     <!--Internal Styles-->
     <link rel="stylesheet" href="taskMap.css" />
+    
 
     <title>TaskMap</title>
 </head>
@@ -44,10 +48,18 @@
                 <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title"/>
                 <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
                 <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
-                <!--TODO - Goal for weekend
-                    - Get time picker working properly
-                    - Address type ahead working properly-->
-            </section>
+                <p id="datepairExample">
+                    <input type="text" class="date start" />
+                    <input type="text" class="time start" /> to
+                    <input type="text" class="time end" />
+                    <input type="text" class="date end" />
+                </p>
+
+
+                    <!--TODO - Goal for weekend
+            - Get time picker working properly
+            - Address type ahead working properly-->
+</section>
 
             <section id="map"></section>
         </section>
