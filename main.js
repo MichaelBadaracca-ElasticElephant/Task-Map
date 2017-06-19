@@ -2,7 +2,7 @@ var item = Vue.component( 'task', {
     template: `
                 <li class="task-in-list" v-on:click="selectTask(task)">
                     <h2>{{task.title}}</h2>
-                    <h3>{{task.time}}</h3>
+                    <h3>{{task.dateTime.toString()}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
                     <h3>{{task.lat}}</h3>
@@ -28,17 +28,16 @@ var item = Vue.component( 'task', {
     }
 });
 
-
+//take value from date-time picker and convert it into a date object
 var mainAppVm = new Vue( {
     //components: { VueTimepicker },
     el: '#app',
     data: {
 
         selectedTask: {},
+        selectedTimeAsString:"",
         placesSearch: {},
         autocomplete: {},
-        startLat: -25.363,
-        startLng: 131.044,
         directionsDisplay: null,
         directionsService: null,
         taskList: [
@@ -49,6 +48,7 @@ var mainAppVm = new Vue( {
                 description: "Pick up package from post office",
                 date: "6/18/2017",
                 time: "1:30 pm",
+                dateTime: new Date( "1908-03-25T14:45" ),
                 duration: 0.25,
                 locationName: "Moorehad Post Office",
                 address: "4985 Moorhead Ave, Boulder, CO 80305",
@@ -61,6 +61,7 @@ var mainAppVm = new Vue( {
                 description: "Get beer for Micahl's party",
                 date: "6/18/2017",
                 time: "4:30 pm",
+                dateTime: new Date( "1920-03-25T14:45" ),
                 duration: 0.25,
                 locationName: "Hazel's Beverage World",
                 address: "1955 28th St, Boulder, CO 80301",
@@ -73,6 +74,7 @@ var mainAppVm = new Vue( {
                 description: "Micahl's birthday party",
                 date: "6/18/2017",
                 time: "7:00 pm",
+                dateTime: new Date( "1998-03-25T14:45" ),
                 duration: 0.25,
                 locationName: "Hapa",
                 address: "1117 Pearl St, Boulder, CO 80302",
@@ -130,6 +132,10 @@ var mainAppVm = new Vue( {
         mapData: function () {
             console.log("Refreshing map")
             this.drawMap();
+        },
+        selectedTimeAsString: function () {
+            var dateObj = new Date( this.selectedTimeAsString );
+            this.selectedTask.dateTime = dateObj;
         }
     },
     methods: {
@@ -214,8 +220,6 @@ var mainAppVm = new Vue( {
             this.selectedTask.lng = place.geometry.location.lng() 
             this.selectedTask.address = place.formatted_address;
             this.selectedTask.locationName = place.name;
-            this.mapData.testUpdate += "change";
-
         },
         //*** PLACES AUTOCOMPLETE END ***
         newTask: function () {
@@ -243,6 +247,9 @@ var mainAppVm = new Vue( {
         },
         selectTask: function ( task ) {
             this.selectedTask = task;
+            //Update selected time as string for date picker
+            this.selectedTimeAsString = convertDateTimeToLocalString( this.selectedTask.dateTime );
+
         },
         initializeDatePicker: function () {
             $( '#scrollDefaultExample' ).timepicker( { 'scrollDefault': 'now' });
@@ -250,6 +257,7 @@ var mainAppVm = new Vue( {
     },
     created: function () {
         this.selectedTask = this.taskList[0];
+        this.selectedTime = this.selectedTask.dateTime;
 
         this.getMapScript();
 
@@ -258,4 +266,18 @@ var mainAppVm = new Vue( {
 
 $( document ).ready( function () {
     mainAppVm.initializeDatePicker();
+    updateLocalTimePicker( mainAppVm.selectedTask.dateTime);
 })
+
+function convertDateTimeToLocalString(datetime) {
+    var dateTimeISOString = datetime.toISOString();
+    //this takes something like 1908-03-25T20:45:00.000Z and takes the last character off to make it 1908-03-25T20:45:00.000 which is an acceptable format for the datetime-local picker
+    var dateTimeStringFormatted = dateTimeISOString.substring( 0, dateTimeISOString.length - 1 );
+    console.log("datetimeformattedd", dateTimeStringFormatted );
+    return dateTimeStringFormatted;
+}
+
+function updateLocalTimePicker( datetime) {
+    document.getElementById( "date-time-picker" ).value = convertDateTimeToLocalString( datetime );
+}
+

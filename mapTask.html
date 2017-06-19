@@ -58,7 +58,10 @@
                         <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title" />
                         <input v-model="selectedTask.locationName" />
                         <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
-                        <input id="scrollDefaultExample" v-model="selectedTask.time" type="text" />
+                        <input id="scrollDefaultExample" v-model="selectedTask.time"  type="text" />
+                        <input id="date-time-picker" type="datetime-local" v-model="selectedTimeAsString">
+                        <!--<input id="date-time-picker" type="datetime-local" />-->
+                        <h2>{{selectedTask.dateTime.toString()}}</h2>
                         <!--<vue-timepicker></vue-timepicker>-->
                     </span>
                     <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
