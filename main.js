@@ -5,8 +5,6 @@ var item = Vue.component( 'task', {
                     <h3>{{task.dateTime.toString()}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
-                    <h3>{{task.lat}}</h3>
-                    <h3>{{task.lng}}</h3>
                     <button v-on:click="removeTask(task)">Remove</button>
                 </li>
               `,
@@ -22,13 +20,11 @@ var item = Vue.component( 'task', {
             this.$emit( 'remove-task', task );
         },
         selectTask: function ( task ) {
-            console.log( "Select Task from component" )
             this.$emit( 'select-task', task );
         }
     }
 });
 
-//take value from date-time picker and convert it into a date object
 var mainAppVm = new Vue( {
     //components: { VueTimepicker },
     el: '#app',
@@ -48,7 +44,7 @@ var mainAppVm = new Vue( {
                 description: "Pick up package from post office",
                 date: "6/18/2017",
                 time: "1:30 pm",
-                dateTime: new Date( "1908-03-25T14:45" ),
+                dateTime: new Date( "2017-06-19T14:45" ),
                 duration: 0.25,
                 locationName: "Moorehad Post Office",
                 address: "4985 Moorhead Ave, Boulder, CO 80305",
@@ -61,7 +57,7 @@ var mainAppVm = new Vue( {
                 description: "Get beer for Micahl's party",
                 date: "6/18/2017",
                 time: "4:30 pm",
-                dateTime: new Date( "1920-03-25T14:45" ),
+                dateTime: new Date( "2017-06-19T20:45" ),
                 duration: 0.25,
                 locationName: "Hazel's Beverage World",
                 address: "1955 28th St, Boulder, CO 80301",
@@ -74,7 +70,7 @@ var mainAppVm = new Vue( {
                 description: "Micahl's birthday party",
                 date: "6/18/2017",
                 time: "7:00 pm",
-                dateTime: new Date( "1998-03-25T14:45" ),
+                dateTime: new Date( "2017-06-19T03:45" ),
                 duration: 0.25,
                 locationName: "Hapa",
                 address: "1117 Pearl St, Boulder, CO 80302",
@@ -134,8 +130,16 @@ var mainAppVm = new Vue( {
             this.drawMap();
         },
         selectedTimeAsString: function () {
+            console.log( "#######" )
+            console.log( "SelectedTimeAsString", this.selectedTimeAsString );
+
+
+
             var dateObj = new Date( this.selectedTimeAsString );
+            console.log( "DateObj", dateObj );
             this.selectedTask.dateTime = dateObj;
+            console.log( "#######" )
+            this.sortTasksByTime();
         }
     },
     methods: {
@@ -222,6 +226,15 @@ var mainAppVm = new Vue( {
             this.selectedTask.locationName = place.name;
         },
         //*** PLACES AUTOCOMPLETE END ***
+
+
+        sortTasksByTime: function () {
+            //sorts tasks by ascending order (earliest to latest)
+            this.taskList.sort( function ( task1, task2 ) {
+                return task1.dateTime - task2.dateTime;
+            });
+        },
+
         newTask: function () {
 
             var newTask = {
@@ -230,6 +243,7 @@ var mainAppVm = new Vue( {
                 description: "",
                 date: "",
                 time: "",
+                dateTime:"",
                 duration: 0,
                 locationName: "",
                 address: "",
@@ -248,7 +262,13 @@ var mainAppVm = new Vue( {
         selectTask: function ( task ) {
             this.selectedTask = task;
             //Update selected time as string for date picker
+            console.log("*************")
+            console.log( "Tasks Time", this.selectedTask.dateTime );
+            //console.log( "Tasks time as string", convertDateTimeToLocalString( this.selectedTask.dateTime ) )
+           
+
             this.selectedTimeAsString = convertDateTimeToLocalString( this.selectedTask.dateTime );
+            console.log( "*************" )
 
         },
         initializeDatePicker: function () {
@@ -256,9 +276,9 @@ var mainAppVm = new Vue( {
         }
     },
     created: function () {
+        this.sortTasksByTime()
         this.selectedTask = this.taskList[0];
         this.selectedTime = this.selectedTask.dateTime;
-
         this.getMapScript();
 
     }
@@ -269,11 +289,27 @@ $( document ).ready( function () {
     updateLocalTimePicker( mainAppVm.selectedTask.dateTime);
 })
 
-function convertDateTimeToLocalString(datetime) {
-    var dateTimeISOString = datetime.toISOString();
+function convertDateTimeToLocalString( datetime ) {
+    //BUG: for some reason converting to the ISO string is off by 6 hours
+    //as a temporary admittedly hacky work around you could subtract six hours before converting
+
+    console.log( "-----------" );
+    console.log( "Datetime", datetime );
+
+    var timeZoneOffset = datetime.getTimezoneOffset();
+    var timeZoneOffsetInHours= timeZoneOffset / 60;
+    var offsetDateTimeInMs = datetime.setHours( datetime.getHours() - timeZoneOffsetInHours);
+    var offsetDateTime = new Date( offsetDateTimeInMs )
+    //console.log( "Offset datetime", offsetDateTime);
+
+    console.log( "Timezone Offset", timeZoneOffsetInHours );
+    var dateTimeISOString = offsetDateTime.toISOString();
+    //var dateTimeISOString = datetime.toUTCString();
+    console.log( "ISO String", dateTimeISOString )
     //this takes something like 1908-03-25T20:45:00.000Z and takes the last character off to make it 1908-03-25T20:45:00.000 which is an acceptable format for the datetime-local picker
     var dateTimeStringFormatted = dateTimeISOString.substring( 0, dateTimeISOString.length - 1 );
-    console.log("datetimeformattedd", dateTimeStringFormatted );
+    console.log( "datetimeformattedd", dateTimeStringFormatted );
+    console.log( "-----------" );
     return dateTimeStringFormatted;
 }
 
@@ -281,3 +317,7 @@ function updateLocalTimePicker( datetime) {
     document.getElementById( "date-time-picker" ).value = convertDateTimeToLocalString( datetime );
 }
 
+
+
+
+//sort when the date changes
