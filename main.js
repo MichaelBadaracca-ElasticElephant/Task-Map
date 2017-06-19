@@ -30,6 +30,7 @@ var item = Vue.component( 'task', {
 
 
 var mainAppVm = new Vue( {
+    //components: { VueTimepicker },
     el: '#app',
     data: {
 
@@ -82,7 +83,7 @@ var mainAppVm = new Vue( {
     },
 
     computed: {
-        mapData: function () {
+        mapData: function () {  
             var mapMarkers = [];
             var points = [];
 
