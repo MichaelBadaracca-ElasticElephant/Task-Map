@@ -82,42 +82,36 @@ var mainAppVm = new Vue( {
     },
 
     computed: {
-        mapLocations: function () {
+        mapData: function () {
 
             var mapMarkers = [];
+            var points = [];
 
             //draw markers
             for ( task of this.taskList ) {
                 //create a marker
-                var marker = new google.maps.Marker( {
-                    position: { lat: task.lat, lng: task.lng },
-                    map: this.map
-                })
-                mapMarkers.push( marker );
+                //var marker = new google.maps.Marker( {
+                //    position: { lat: task.lat, lng: task.lng },
+                //    map: this.map
+                //})
+                //mapMarkers.push( marker );
+
+                //create a waypoint
+                var wayPoint = {
+                    location: { lat: task.lat, lng: task.lng },
+                    stopover:true
+                }
+                points.push( wayPoint );
             }
 
+            //first marker is the start, last marker is the end, everything inbetween is a waypoint
             var routeInfo = {
-                startingPoint: mapMarkers[0].position,
-                endingPoint: mapMarkers[mapMarkers.length - 1].position,
-                
+                startingPoint: points[0].location,
+                endingPoint: points[points.length - 1].location,
+                //The waypoints include everything but the first and last points
+                wayPoints: points.slice( 1, points.length - 1 )
             }
-
             return routeInfo;
-
-
-            //set start to first
-            //set end to last
-            //everything in between is a waypoint
-
-            //this.initMap()
-            //return {
-            //    //uluru: { lat: this.startLat, lng: this.startLng },
-            //    //sydney: { lat: -33.868937, lng: 151.207788 },
-            //    //brisbane: { lat: -27.465970, lng: 153.027510 },
-            //    //boulder: {"4985 Moorhead Ave, Boulder, CO 80305, USA"},
-            //    wayPoints: [{ location: "Brisbane, Queensland", stopover: true },
-            //    { location: new google.maps.LatLng( - 24.990553, 151.954581 ), stopover: true }, { location: "Bundaberg, Queensland", stopover: true }]
-            //}
         },
         map: function () {
             return new google.maps.Map( document.getElementById( 'map' ), {
@@ -125,28 +119,10 @@ var mainAppVm = new Vue( {
                 center: { lat: this.taskList[0].lat, lng: this.taskList[0].lng }
             });
         },
-        //uluruMarker: function () {
-        //    return new google.maps.Marker( {
-        //        position: this.mapLocations.mapLocationsuluru,
-        //        map: this.map
-        //    })
-        //},
-        //sydneyMarker: function () {
-        //    return new google.maps.Marker( {
-        //        position: this.mapLocations.sydney,
-        //        map: this.map
-        //    })
-        //},
-        //brisbaneMarker: function () {
-        //    return new google.maps.Marker( {
-        //        position: this.mapLocations.brisbane,
-        //        map: this.map
-        //    })
-        //},
     },
     watch: {
         // whenever question changes, this function will run
-        mapLocations: function () {
+        mapData: function () {
             this.drawMap();
         }
     },
@@ -174,16 +150,16 @@ var mainAppVm = new Vue( {
         },
 
         drawMap: function () {
-            this.calculateAndDisplayRoute( this.directionsService, this.directionsDisplay, this.mapLocations );
+            this.calculateAndDisplayRoute( this.directionsService, this.directionsDisplay, this.mapData );
         },
 
-        calculateAndDisplayRoute: function ( directionsService, directionsDisplay, mapLocations ) {
+        calculateAndDisplayRoute: function ( directionsService, directionsDisplay, mapData ) {
             var selectedMode = "DRIVING"
             directionsService.route( {
-                origin: mapLocations.startingPoint,
-                destination: mapLocations.endingPoint,
-                //waypoints: mapLocations.wayPoints,
-                //optimizeWaypoints: false,
+                origin: mapData.startingPoint,
+                destination: mapData.endingPoint,
+                waypoints: mapData.wayPoints,
+                optimizeWaypoints: false,
                 travelMode: google.maps.TravelMode[selectedMode]
             }, function ( response, status ) {
                 if ( status == 'OK' ) {
@@ -226,8 +202,8 @@ var mainAppVm = new Vue( {
             }
         },
         fillInAddress: function () {
+            //Populate model with information from autocompleted place
             var place = autocomplete.getPlace();
-            console.log( "Place lat", place.geometry.location.lng() );
             this.selectedTask.lat = place.geometry.location.lat() 
             this.selectedTask.lng = place.geometry.location.lng() 
             this.selectedTask.address = place.formatted_address;
