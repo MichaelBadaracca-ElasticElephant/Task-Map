@@ -5,6 +5,8 @@ var item = Vue.component( 'task', {
                     <h3>{{task.time}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
+                    <h3>{{task.lat}}</h3>
+                    <h3>{{task.lng}}</h3>
                     <button v-on:click="removeTask(task)">Remove</button>
                 </li>
               `,
@@ -48,7 +50,9 @@ var mainAppVm = new Vue( {
                 time: "1:30 pm",
                 duration: 0.25,
                 locationName: "Moorehad Post Office",
-                address: "4985 Moorhead Ave, Boulder, CO 80305"
+                address: "4985 Moorhead Ave, Boulder, CO 80305",
+                lat: 39.9866824,
+                lng: -105.23722179999999,
             },
             {
                 id: 2,
@@ -58,7 +62,9 @@ var mainAppVm = new Vue( {
                 time: "4:30 pm",
                 duration: 0.25,
                 locationName: "Hazel's Beverage World",
-                address: "1955 28th St, Boulder, CO 80301"
+                address: "1955 28th St, Boulder, CO 80301",
+                lat: 40.0207742,
+                lng: -105.26005520000001,
             },
             {
                 id: 3,
@@ -68,59 +74,75 @@ var mainAppVm = new Vue( {
                 time: "7:00 pm",
                 duration: 0.25,
                 locationName: "Hapa",
-                address: "1117 Pearl St, Boulder, CO 80302"
-            },
-            {
-                id: 4,
-                title: "Micahl's Party",
-                description: "Micahl's birthday party",
-                date: "6/18/2017",
-                time: "7:00 pm",
-                duration: 0.25,
-                locationName: "Hapa",
-                address: "1117 Pearl St, Boulder, CO 80302"
+                address: "1117 Pearl St, Boulder, CO 80302",
+                lat: 40.018063,
+                lng: -105.28089749999998,
             }
-
         ],
     },
 
     computed: {
         mapLocations: function () {
-            //this.initMap()
-            return {
-                uluru: { lat: this.startLat, lng: this.startLng },
-                sydney: { lat: -33.868937, lng: 151.207788 },
-                brisbane: { lat: -27.465970, lng: 153.027510 },
-                wayPoints: [{ location: "Brisbane, Queensland", stopover: true },
-                { location: new google.maps.LatLng( - 24.990553, 151.954581 ), stopover: true }, { location: "Bundaberg, Queensland", stopover: true }]
+
+            var mapMarkers = [];
+
+            //draw markers
+            for ( task of this.taskList ) {
+                //create a marker
+                var marker = new google.maps.Marker( {
+                    position: { lat: task.lat, lng: task.lng },
+                    map: this.map
+                })
+                mapMarkers.push( marker );
             }
+
+            var routeInfo = {
+                startingPoint: mapMarkers[0].position,
+                endingPoint: mapMarkers[mapMarkers.length - 1].position,
+                
+            }
+
+            return routeInfo;
+
+
+            //set start to first
+            //set end to last
+            //everything in between is a waypoint
+
+            //this.initMap()
+            //return {
+            //    //uluru: { lat: this.startLat, lng: this.startLng },
+            //    //sydney: { lat: -33.868937, lng: 151.207788 },
+            //    //brisbane: { lat: -27.465970, lng: 153.027510 },
+            //    //boulder: {"4985 Moorhead Ave, Boulder, CO 80305, USA"},
+            //    wayPoints: [{ location: "Brisbane, Queensland", stopover: true },
+            //    { location: new google.maps.LatLng( - 24.990553, 151.954581 ), stopover: true }, { location: "Bundaberg, Queensland", stopover: true }]
+            //}
         },
         map: function () {
-            console.log( "map recomputed" )
             return new google.maps.Map( document.getElementById( 'map' ), {
-                zoom: 4,
-                center: this.mapLocations.uluru
+                zoom: 13,
+                center: { lat: this.taskList[0].lat, lng: this.taskList[0].lng }
             });
         },
-        uluruMarker: function () {
-            return new google.maps.Marker( {
-                position: this.mapLocations.mapLocationsuluru,
-                map: this.map
-            })
-        },
-        sydneyMarker: function () {
-            return new google.maps.Marker( {
-                position: this.mapLocations.sydney,
-                map: this.map
-            })
-        },
-        brisbaneMarker: function () {
-            return new google.maps.Marker( {
-                position: this.mapLocations.brisbane,
-                map: this.map
-            })
-        }
-
+        //uluruMarker: function () {
+        //    return new google.maps.Marker( {
+        //        position: this.mapLocations.mapLocationsuluru,
+        //        map: this.map
+        //    })
+        //},
+        //sydneyMarker: function () {
+        //    return new google.maps.Marker( {
+        //        position: this.mapLocations.sydney,
+        //        map: this.map
+        //    })
+        //},
+        //brisbaneMarker: function () {
+        //    return new google.maps.Marker( {
+        //        position: this.mapLocations.brisbane,
+        //        map: this.map
+        //    })
+        //},
     },
     watch: {
         // whenever question changes, this function will run
@@ -133,7 +155,7 @@ var mainAppVm = new Vue( {
             console.log( "GOT HERE" );
             $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
                 var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=mainAppVm.initMap`;
-                $.getScript( googleMapsApiScript, function ( data, textStatus, jqxhr ) {
+                $.getScript( googleMapsApiScript, function () {
                     console.log( "Google maps script loaded" );
                     mainAppVm.initAutocomplete();
                 });
@@ -158,10 +180,10 @@ var mainAppVm = new Vue( {
         calculateAndDisplayRoute: function ( directionsService, directionsDisplay, mapLocations ) {
             var selectedMode = "DRIVING"
             directionsService.route( {
-                origin: mapLocations.uluru,
-                destination: mapLocations.sydney,
-                waypoints: mapLocations.wayPoints,
-                optimizeWaypoints: false,
+                origin: mapLocations.startingPoint,
+                destination: mapLocations.endingPoint,
+                //waypoints: mapLocations.wayPoints,
+                //optimizeWaypoints: false,
                 travelMode: google.maps.TravelMode[selectedMode]
             }, function ( response, status ) {
                 if ( status == 'OK' ) {
@@ -205,6 +227,9 @@ var mainAppVm = new Vue( {
         },
         fillInAddress: function () {
             var place = autocomplete.getPlace();
+            console.log( "Place lat", place.geometry.location.lng() );
+            this.selectedTask.lat = place.geometry.location.lat() 
+            this.selectedTask.lng = place.geometry.location.lng() 
             this.selectedTask.address = place.formatted_address;
             this.selectedTask.locationName = place.name;
 
@@ -240,6 +265,7 @@ var mainAppVm = new Vue( {
     },
     created: function () {
         this.selectedTask = this.taskList[0];
+
         this.getMapScript();
 
     }

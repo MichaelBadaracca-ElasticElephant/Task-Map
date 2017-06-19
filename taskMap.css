@@ -16,8 +16,15 @@ header{
     bottom: 3vh;
 }
 
+
+/*Overwritting bootstrap styles*/
+.container-wide{
+    padding: 0 50px;
+}
+
+
 /*Map Styles*/
 #map {
-    height: 500px;
+    height: 75vh;
     width: 100%;
 }
