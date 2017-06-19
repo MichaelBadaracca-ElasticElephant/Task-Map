@@ -83,11 +83,9 @@ var mainAppVm = new Vue( {
 
     computed: {
         mapData: function () {
-
             var mapMarkers = [];
             var points = [];
 
-            //draw markers
             for ( task of this.taskList ) {
                 //create a marker
                 //var marker = new google.maps.Marker( {
@@ -96,12 +94,17 @@ var mainAppVm = new Vue( {
                 //})
                 //mapMarkers.push( marker );
 
-                //create a waypoint
-                var wayPoint = {
-                    location: { lat: task.lat, lng: task.lng },
-                    stopover:true
+                //create a waypoint if there are valid coordinates
+                //TODO: have a more rigorious test on whether the coordinates are valid
+                //Google seems to be able to tell when it give a popup saying they are invalid
+                if ( task.lat !== 0 && task.lng !== 0 ) {
+                    var wayPoint = {
+                        location: { lat: task.lat, lng: task.lng },
+                        stopover: true
+                    }
+                    points.push( wayPoint );
                 }
-                points.push( wayPoint );
+               
             }
 
             //first marker is the start, last marker is the end, everything inbetween is a waypoint
@@ -109,7 +112,8 @@ var mainAppVm = new Vue( {
                 startingPoint: points[0].location,
                 endingPoint: points[points.length - 1].location,
                 //The waypoints include everything but the first and last points
-                wayPoints: points.slice( 1, points.length - 1 )
+                wayPoints: points.slice( 1, points.length - 1 ),
+                testUpdate: "test"
             }
             return routeInfo;
         },
@@ -123,6 +127,7 @@ var mainAppVm = new Vue( {
     watch: {
         // whenever question changes, this function will run
         mapData: function () {
+            console.log("Refreshing map")
             this.drawMap();
         }
     },
@@ -208,6 +213,7 @@ var mainAppVm = new Vue( {
             this.selectedTask.lng = place.geometry.location.lng() 
             this.selectedTask.address = place.formatted_address;
             this.selectedTask.locationName = place.name;
+            this.mapData.testUpdate += "change";
 
         },
         //*** PLACES AUTOCOMPLETE END ***
@@ -221,7 +227,9 @@ var mainAppVm = new Vue( {
                 time: "",
                 duration: 0,
                 locationName: "",
-                address: ""
+                address: "",
+                lat: 0,
+                lng:0
             };
             this.taskList.push( newTask );
             this.selectedTask = newTask;
