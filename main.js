@@ -2,21 +2,24 @@ var item = Vue.component( 'task', {
     template: `
                 <li class="task-in-list" v-on:click="selectTask(task)">
                     <h2>{{task.title}}</h2>
-                    <h3>{{task.dateTime.toDateString()}}</h3>
-                    <h3>{{task.locationName}}</h3>
-                    <h3>{{task.address}}</h3>
-                    <button v-on:click="removeTask(task)">Remove</button>
+                        
+                    <h4>{{time()}} on {{task.dateTime.toDateString()}}</h4>
+                    <h4>{{task.locationName}}</h4>
+                    <h4>{{task.address}}</h4>\
+                    <div class="task-controls">
+                        <button class="glyphicon glyphicon-trash btn btn-danger" v-on:click="removeTask(task)"></button>
+                        <button class="glyphicon glyphicon-pencil btn btn-info" v-on:click="removeTask(task)"></button>
+                    </div>
+                    
                 </li>
               `,
+    props: ['task'],
     data: function () {
         return {}
     },
-    props: ['task'],
+    
     computed: {
-        time: function () {
-            var time = mainAppVm.formatAMPM(this.task.dateTime);
-            return time;
-        }
+
     },
     methods: {
         removeTask: function ( task ) {
@@ -24,6 +27,12 @@ var item = Vue.component( 'task', {
         },
         selectTask: function ( task ) {
             this.$emit( 'select-task', task );
+        },
+        time: function () {
+            console.log( "TASK", this.task );
+            console.log( "MAINAPPVM", this.formatAMPM );
+            var time = formatAMPM( this.task.dateTime );
+            return time;
         }
     }
 });
@@ -31,7 +40,6 @@ var item = Vue.component( 'task', {
 var mainAppVm = new Vue( {
     el: '#app',
     data: {
-
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -39,13 +47,11 @@ var mainAppVm = new Vue( {
         directionsDisplay: null,
         directionsService: null,
         taskList: [
-            //Create Task
             {
                 id: 1,
                 title: "Pick Up Package",
                 description: "Pick up package from post office",
                 dateTime: new Date( "2017-06-19T14:45" ),
-                duration: 0.25,
                 locationName: "Moorehad Post Office",
                 address: "4985 Moorhead Ave, Boulder, CO 80305",
                 lat: 39.9866824,
@@ -56,7 +62,6 @@ var mainAppVm = new Vue( {
                 title: "Get Beer",
                 description: "Get beer for Micahl's party",
                 dateTime: new Date( "2017-06-19T20:30" ),
-                duration: 0.25,
                 locationName: "Hazel's Beverage World",
                 address: "1955 28th St, Boulder, CO 80301",
                 lat: 40.0207742,
@@ -66,10 +71,7 @@ var mainAppVm = new Vue( {
                 id: 3,
                 title: "Micahl's Party",
                 description: "Micahl's birthday party",
-                date: "6/18/2017",
-                time: "7:00 pm",
                 dateTime: new Date( "2017-06-19T03:15" ),
-                duration: 0.25,
                 locationName: "Hapa",
                 address: "1117 Pearl St, Boulder, CO 80302",
                 lat: 40.018063,
@@ -83,11 +85,10 @@ var mainAppVm = new Vue( {
             var mapMarkers = [];
             var points = [];
 
-
             for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
                 var task = this.taskList[taskCount];
                 //create a marker
-                //mapMarkers.push( this.makeMarker( task, taskCount ) );
+                mapMarkers.push( this.makeMarker( task, taskCount ) );
 
                 //create a waypoint if there are valid coordinates
                 //TODO: have a more rigorious test on whether the coordinates are valid
@@ -155,8 +156,8 @@ var mainAppVm = new Vue( {
 
             this.directionsDisplay = new google.maps.DirectionsRenderer;
             this.directionsDisplay.setOptions( {
-                //suppressMarkers: true,
-                draggable: true
+                suppressMarkers: true,
+                //draggable: true
                 //markerOptions: new google.maps.markerOptions()
             })
             this.directionsService = new google.maps.DirectionsService;
@@ -188,35 +189,11 @@ var mainAppVm = new Vue( {
             new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
                 map: this.map,
-                label: this.makeMarkerLabel(task,count)
+                label: makeMarkerLabel(task,count)
                 //draggable:true
             })
         },
-        makeMarkerLabel: function ( task, count ) {
-            var time = this.formatAMPM( task.dateTime );
-            var markerLabel = `${count+1} - ${time} `
-            return markerLabel;
-        },
-        formatAMPM: function ( date ) {
-            //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
-            //TODO: fix timezone offset problem
-            var timeZoneOffset = date.getTimezoneOffset();
-            var timeZoneOffsetInHours = timeZoneOffset / 60;
-
-            var hours = date.getHours();
-            //console.log("INITIAL HOURS", date.getHours() );
-            //console.log( "OFFSET HOURS", hours );
-
-
-            var minutes = date.getMinutes();
-            var ampm = hours >= 12 ? 'pm' : 'am';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            var strTime = hours + ':' + minutes + ' ' + ampm;
-            return strTime;
-        },
-
+        
         //*** MAPS END ***
 
         //*** PLACES AUTOCOMPLETE START ***
@@ -302,21 +279,16 @@ var mainAppVm = new Vue( {
             console.log( "*************" )
 
         },
-        initializeDatePicker: function () {
-            $( '#scrollDefaultExample' ).timepicker( { 'scrollDefault': 'now' });
-        }
     },
     created: function () {
         this.sortTasksByTime()
         this.selectedTask = this.taskList[0];
         this.selectedTime = this.selectedTask.dateTime;
         this.getMapScript();
-
     }
 })
 
 $( document ).ready( function () {
-    mainAppVm.initializeDatePicker();
     updateLocalTimePicker( mainAppVm.selectedTask.dateTime );
 })
 
@@ -344,14 +316,34 @@ function convertDateTimeToLocalString( datetime ) {
     return dateTimeStringFormatted;
 }
 
-
-
-
-
 function updateLocalTimePicker( datetime ) {
     document.getElementById( "date-time-picker" ).value = convertDateTimeToLocalString( datetime );
 }
 
+function formatAMPM( date ) {
+    //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+    //TODO: fix timezone offset problem
+    var timeZoneOffset = date.getTimezoneOffset();
+    var timeZoneOffsetInHours = timeZoneOffset / 60;
+
+    var hours = date.getHours();
+    //console.log("INITIAL HOURS", date.getHours() );
+    //console.log( "OFFSET HOURS", hours );
 
 
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+}
+
+
+function makeMarkerLabel ( task, count ) {
+    var time = this.formatAMPM( task.dateTime );
+    var markerLabel = `${count + 1} - ${time} `
+    return markerLabel;
+}
 //update the task time whenever the date is set

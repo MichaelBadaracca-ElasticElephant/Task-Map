@@ -16,11 +16,20 @@ header{
     bottom: 3vh;
 }
 
+.task-in-list {
+    border-bottom: 1px solid lightgrey;
+    /*border-top: 1px solid grey;*/
+    padding-bottom:10px;
+}
+.task-controls {
+    text-align: right;
+}
 
 /*Overwritting bootstrap styles*/
-.container-wide{
+.container-wide {
     padding: 0 50px;
 }
+
 
 
 /*Map Styles*/
