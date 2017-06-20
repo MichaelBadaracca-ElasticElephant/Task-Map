@@ -31,7 +31,7 @@ var mainAppVm = new Vue( {
     data: {
 
         selectedTask: {},
-        selectedTimeAsString:"",
+        selectedTimeAsString: "",
         placesSearch: {},
         autocomplete: {},
         directionsDisplay: null,
@@ -57,7 +57,7 @@ var mainAppVm = new Vue( {
                 description: "Get beer for Micahl's party",
                 date: "6/18/2017",
                 time: "4:30 pm",
-                dateTime: new Date( "2017-06-19T20:45" ),
+                dateTime: new Date( "2017-06-19T20:30" ),
                 duration: 0.25,
                 locationName: "Hazel's Beverage World",
                 address: "1955 28th St, Boulder, CO 80301",
@@ -70,7 +70,7 @@ var mainAppVm = new Vue( {
                 description: "Micahl's birthday party",
                 date: "6/18/2017",
                 time: "7:00 pm",
-                dateTime: new Date( "2017-06-19T03:45" ),
+                dateTime: new Date( "2017-06-19T03:15" ),
                 duration: 0.25,
                 locationName: "Hapa",
                 address: "1117 Pearl St, Boulder, CO 80302",
@@ -81,17 +81,15 @@ var mainAppVm = new Vue( {
     },
 
     computed: {
-        mapData: function () {  
+        mapData: function () {
             var mapMarkers = [];
             var points = [];
 
-            for ( task of this.taskList ) {
+
+            for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
+                var task = this.taskList[taskCount];
                 //create a marker
-                //var marker = new google.maps.Marker( {
-                //    position: { lat: task.lat, lng: task.lng },
-                //    map: this.map
-                //})
-                //mapMarkers.push( marker );
+                mapMarkers.push( this.makeMarker( task, taskCount ) );
 
                 //create a waypoint if there are valid coordinates
                 //TODO: have a more rigorious test on whether the coordinates are valid
@@ -103,7 +101,7 @@ var mainAppVm = new Vue( {
                     }
                     points.push( wayPoint );
                 }
-               
+
             }
 
             //first marker is the start, last marker is the end, everything inbetween is a waypoint
@@ -112,7 +110,6 @@ var mainAppVm = new Vue( {
                 endingPoint: points[points.length - 1].location,
                 //The waypoints include everything but the first and last points
                 wayPoints: points.slice( 1, points.length - 1 ),
-                testUpdate: "test"
             }
             return routeInfo;
         },
@@ -126,7 +123,7 @@ var mainAppVm = new Vue( {
     watch: {
         // whenever question changes, this function will run
         mapData: function () {
-            console.log("Refreshing map")
+            console.log( "Refreshing map" )
             this.drawMap();
         },
         selectedTimeAsString: function () {
@@ -160,6 +157,11 @@ var mainAppVm = new Vue( {
         initMap: function () {
 
             this.directionsDisplay = new google.maps.DirectionsRenderer;
+            this.directionsDisplay.setOptions( {
+                suppressMarkers: true,
+                draggable: true
+                //markerOptions: new google.maps.markerOptions()
+            })
             this.directionsService = new google.maps.DirectionsService;
             this.directionsDisplay.setMap( this.map );
             this.drawMap();
@@ -184,6 +186,38 @@ var mainAppVm = new Vue( {
                     window.alert( 'Directions request failed due to ' + status );
                 }
             });
+        },
+        makeMarker: function ( task, count ) {
+            new google.maps.Marker( {
+                position: { lat: task.lat, lng: task.lng },
+                map: this.map,
+                label: this.makeMarkerLabel(task,count)
+                //draggable:true
+            })
+        },
+        makeMarkerLabel: function ( task, count ) {
+            var time = this.formatAMPM( task.dateTime );
+            var markerLabel = `${count+1} - ${time} `
+            return markerLabel;
+        },
+        formatAMPM: function ( date ) {
+            //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+            //TODO: fix timezone offset problem
+            var timeZoneOffset = date.getTimezoneOffset();
+            var timeZoneOffsetInHours = timeZoneOffset / 60;
+
+            var hours = date.getHours();
+            //console.log("INITIAL HOURS", date.getHours() );
+            //console.log( "OFFSET HOURS", hours );
+
+
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
         },
 
         //*** MAPS END ***
@@ -220,8 +254,8 @@ var mainAppVm = new Vue( {
         fillInAddress: function () {
             //Populate model with information from autocompleted place
             var place = autocomplete.getPlace();
-            this.selectedTask.lat = place.geometry.location.lat() 
-            this.selectedTask.lng = place.geometry.location.lng() 
+            this.selectedTask.lat = place.geometry.location.lat()
+            this.selectedTask.lng = place.geometry.location.lng()
             this.selectedTask.address = place.formatted_address;
             this.selectedTask.locationName = place.name;
         },
@@ -243,12 +277,12 @@ var mainAppVm = new Vue( {
                 description: "",
                 date: "",
                 time: "",
-                dateTime:"",
+                dateTime: "",
                 duration: 0,
                 locationName: "",
                 address: "",
                 lat: 0,
-                lng:0
+                lng: 0
             };
             this.taskList.push( newTask );
             this.selectedTask = newTask;
@@ -262,10 +296,10 @@ var mainAppVm = new Vue( {
         selectTask: function ( task ) {
             this.selectedTask = task;
             //Update selected time as string for date picker
-            console.log("*************")
+            console.log( "*************" )
             console.log( "Tasks Time", this.selectedTask.dateTime );
             //console.log( "Tasks time as string", convertDateTimeToLocalString( this.selectedTask.dateTime ) )
-           
+
 
             this.selectedTimeAsString = convertDateTimeToLocalString( this.selectedTask.dateTime );
             console.log( "*************" )
@@ -286,7 +320,7 @@ var mainAppVm = new Vue( {
 
 $( document ).ready( function () {
     mainAppVm.initializeDatePicker();
-    updateLocalTimePicker( mainAppVm.selectedTask.dateTime);
+    updateLocalTimePicker( mainAppVm.selectedTask.dateTime );
 })
 
 function convertDateTimeToLocalString( datetime ) {
@@ -297,8 +331,8 @@ function convertDateTimeToLocalString( datetime ) {
     console.log( "Datetime", datetime );
 
     var timeZoneOffset = datetime.getTimezoneOffset();
-    var timeZoneOffsetInHours= timeZoneOffset / 60;
-    var offsetDateTimeInMs = datetime.setHours( datetime.getHours() - timeZoneOffsetInHours);
+    var timeZoneOffsetInHours = timeZoneOffset / 60;
+    var offsetDateTimeInMs = datetime.setHours( datetime.getHours() - timeZoneOffsetInHours );
     var offsetDateTime = new Date( offsetDateTimeInMs )
     //console.log( "Offset datetime", offsetDateTime);
 
@@ -313,9 +347,11 @@ function convertDateTimeToLocalString( datetime ) {
     return dateTimeStringFormatted;
 }
 
-function updateLocalTimePicker( datetime) {
+function updateLocalTimePicker( datetime ) {
     document.getElementById( "date-time-picker" ).value = convertDateTimeToLocalString( datetime );
 }
+
+
 
 
 

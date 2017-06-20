@@ -38,7 +38,7 @@
             <h1>TaskMap</h1>
         </header>
         <section class="row">
-            <section id="task-list" class="col-md-3">
+            <section id="task-list" class="col-md-3 col-sm-3">
                 <h1>{{taskList.length}} Tasks</h1>
                 <ol>
                     <task v-for="task in taskList"
@@ -51,7 +51,7 @@
                     <button class="btn btn-success" v-on:click="newTask">Create Task</button>
                 </div>
             </section>
-            <section id="task-details" class="col-md-9">
+            <section id="task-details" class="col-md-9 col-sm-9">
                 <section>
                     <h1>Task Details</h1>
                     <span>
@@ -60,7 +60,6 @@
                         <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
                         <input id="scrollDefaultExample" v-model="selectedTask.time"  type="text" />
                         <input id="date-time-picker" type="datetime-local" v-model="selectedTimeAsString">
-                        <button v-on:click="sortTasksByTime">ORder tasks</button>
                         <!--<vue-timepicker></vue-timepicker>-->
                     </span>
                     <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
