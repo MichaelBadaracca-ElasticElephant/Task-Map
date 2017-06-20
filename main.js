@@ -89,7 +89,7 @@ var mainAppVm = new Vue( {
             for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
                 var task = this.taskList[taskCount];
                 //create a marker
-                mapMarkers.push( this.makeMarker( task, taskCount ) );
+                //mapMarkers.push( this.makeMarker( task, taskCount ) );
 
                 //create a waypoint if there are valid coordinates
                 //TODO: have a more rigorious test on whether the coordinates are valid
@@ -158,7 +158,7 @@ var mainAppVm = new Vue( {
 
             this.directionsDisplay = new google.maps.DirectionsRenderer;
             this.directionsDisplay.setOptions( {
-                suppressMarkers: true,
+                //suppressMarkers: true,
                 draggable: true
                 //markerOptions: new google.maps.markerOptions()
             })
