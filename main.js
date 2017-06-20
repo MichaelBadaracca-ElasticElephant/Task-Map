@@ -29,8 +29,6 @@ var item = Vue.component( 'task', {
             this.$emit( 'select-task', task );
         },
         time: function () {
-            console.log( "TASK", this.task );
-            console.log( "MAINAPPVM", this.formatAMPM );
             var time = formatAMPM( this.task.dateTime );
             return time;
         }
@@ -88,7 +86,7 @@ var mainAppVm = new Vue( {
             for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
                 var task = this.taskList[taskCount];
                 //create a marker
-                mapMarkers.push( this.makeMarker( task, taskCount ) );
+                //mapMarkers.push( this.makeMarker( task, taskCount ) );
 
                 //create a waypoint if there are valid coordinates
                 //TODO: have a more rigorious test on whether the coordinates are valid
@@ -251,7 +249,7 @@ var mainAppVm = new Vue( {
                 description: "",
                 date: "",
                 time: "",
-                dateTime: "",
+                dateTime: new Date(),
                 duration: 0,
                 locationName: "",
                 address: "",
@@ -321,23 +319,26 @@ function updateLocalTimePicker( datetime ) {
 }
 
 function formatAMPM( date ) {
-    //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
-    //TODO: fix timezone offset problem
-    var timeZoneOffset = date.getTimezoneOffset();
-    var timeZoneOffsetInHours = timeZoneOffset / 60;
-
-    var hours = date.getHours();
-    //console.log("INITIAL HOURS", date.getHours() );
-    //console.log( "OFFSET HOURS", hours );
+    console.log( "DATE",typeof date );
 
 
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return strTime;
+        //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+        //TODO: fix timezone offset problem
+        //var timeZoneOffset = date.getTimezoneOffset();
+        //var timeZoneOffsetInHours = timeZoneOffset / 60;
+
+        var hours = date.getHours();
+        //console.log("INITIAL HOURS", date.getHours() );
+        //console.log( "OFFSET HOURS", hours );
+
+
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
 }
 
 

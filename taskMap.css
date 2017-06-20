@@ -30,7 +30,9 @@ header{
     padding: 0 50px;
 }
 
-
+li{
+    font-size:2em;
+}
 
 /*Map Styles*/
 #map {
