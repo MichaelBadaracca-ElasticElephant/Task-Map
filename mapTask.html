@@ -31,6 +31,7 @@
         <header>
             <h1>TaskMap</h1>
         </header>
+        <!--Task List-->
         <section class="row">
             <section id="task-list" class="col-md-3 col-sm-3">
                 <h1>{{taskList.length}} Tasks</h1>
@@ -45,6 +46,7 @@
                     <button class="btn btn-success" v-on:click="newTask">Create Task</button>
                 </div>
             </section>
+            <!--Task Details-->
             <section id="task-details" class="col-md-9 col-sm-9">
                 <section>
                     <h1>Task Details</h1>
@@ -56,6 +58,7 @@
                     </span>
                     <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
                 </section>
+                <!--Map-->
                 <section>
                     <div id="map"></div>
                 </section>

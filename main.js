@@ -2,7 +2,7 @@ var item = Vue.component( 'task', {
     template: `
                 <li class="task-in-list" v-on:click="selectTask(task)">
                     <h2>{{task.title}}</h2>
-                    <h3>{{task.dateTime.toString()}}</h3>
+                    <h3>{{task.dateTime.toDateString()}}</h3>
                     <h3>{{task.locationName}}</h3>
                     <h3>{{task.address}}</h3>
                     <button v-on:click="removeTask(task)">Remove</button>
@@ -13,7 +13,10 @@ var item = Vue.component( 'task', {
     },
     props: ['task'],
     computed: {
-
+        time: function () {
+            var time = mainAppVm.formatAMPM(this.task.dateTime);
+            return time;
+        }
     },
     methods: {
         removeTask: function ( task ) {
@@ -26,7 +29,6 @@ var item = Vue.component( 'task', {
 });
 
 var mainAppVm = new Vue( {
-    //components: { VueTimepicker },
     el: '#app',
     data: {
 
@@ -42,8 +44,6 @@ var mainAppVm = new Vue( {
                 id: 1,
                 title: "Pick Up Package",
                 description: "Pick up package from post office",
-                date: "6/18/2017",
-                time: "1:30 pm",
                 dateTime: new Date( "2017-06-19T14:45" ),
                 duration: 0.25,
                 locationName: "Moorehad Post Office",
@@ -55,8 +55,6 @@ var mainAppVm = new Vue( {
                 id: 2,
                 title: "Get Beer",
                 description: "Get beer for Micahl's party",
-                date: "6/18/2017",
-                time: "4:30 pm",
                 dateTime: new Date( "2017-06-19T20:30" ),
                 duration: 0.25,
                 locationName: "Hazel's Beverage World",
@@ -101,7 +99,6 @@ var mainAppVm = new Vue( {
                     }
                     points.push( wayPoint );
                 }
-
             }
 
             //first marker is the start, last marker is the end, everything inbetween is a waypoint
@@ -347,13 +344,14 @@ function convertDateTimeToLocalString( datetime ) {
     return dateTimeStringFormatted;
 }
 
+
+
+
+
 function updateLocalTimePicker( datetime ) {
     document.getElementById( "date-time-picker" ).value = convertDateTimeToLocalString( datetime );
 }
 
 
 
-
-
-
-//sort when the date changes
+//update the task time whenever the date is set
