@@ -1,19 +1,20 @@
 var item = Vue.component( 'task', {
     template: `
-                <li class="task-in-list" v-on:click="selectTask(task)">
-                    <h2>{{task.title}}</h2>
-                        
-                    <h4>{{time()}} on {{task.dateTime.toDateString()}}</h4>
-                    <h4>{{task.locationName}}</h4>
-                    <h4>{{task.address}}</h4>\
+                <div class="task-in-list" v-on:click="selectTask(task)">          
+                    <h2>{{i + 1}}. {{task.title}}</h2>    
+                    <div class="task-info">
+                        <h4>{{time()}} on {{task.dateTime.toDateString()}}</h4>
+                        <h4>{{task.locationName}}</h4>
+                        <h4>{{task.address}}</h4>
+                    </div>
                     <div class="task-controls">
                         <button class="glyphicon glyphicon-trash btn btn-danger" v-on:click="removeTask(task)"></button>
-                        <button class="glyphicon glyphicon-pencil btn btn-info" v-on:click="removeTask(task)"></button>
+                        <button class="glyphicon glyphicon-pencil btn btn-info" v-on:click=""></button>
                     </div>
                     
-                </li>
+                </div>
               `,
-    props: ['task'],
+    props: ['task','i'],
     data: function () {
         return {}
     },
@@ -47,6 +48,7 @@ var mainAppVm = new Vue( {
         taskList: [
             {
                 id: 1,
+                order:1,
                 title: "Pick Up Package",
                 description: "Pick up package from post office",
                 dateTime: new Date( "2017-06-19T14:45" ),
@@ -57,6 +59,7 @@ var mainAppVm = new Vue( {
             },
             {
                 id: 2,
+                order:2,
                 title: "Get Beer",
                 description: "Get beer for Micahl's party",
                 dateTime: new Date( "2017-06-19T20:30" ),
@@ -67,6 +70,7 @@ var mainAppVm = new Vue( {
             },
             {
                 id: 3,
+                order:3,
                 title: "Micahl's Party",
                 description: "Micahl's birthday party",
                 dateTime: new Date( "2017-06-19T03:15" ),
@@ -154,7 +158,7 @@ var mainAppVm = new Vue( {
 
             this.directionsDisplay = new google.maps.DirectionsRenderer;
             this.directionsDisplay.setOptions( {
-                suppressMarkers: true,
+                suppressMarkers: false,
                 //draggable: true
                 //markerOptions: new google.maps.markerOptions()
             })
@@ -245,7 +249,7 @@ var mainAppVm = new Vue( {
 
             var newTask = {
                 id: this.taskList.length,
-                title: "Untitled Task",
+                title: "New Task",
                 description: "",
                 date: "",
                 time: "",

@@ -31,31 +31,41 @@
             <h1>TaskMap</h1>
         </header>
         <!--Task List-->
-        <section class="row">
-            <section id="task-list" class="col-md-3 col-sm-3">
-                <h1>{{taskList.length}} Tasks</h1>
-                <ol>
-                    <task v-for="task in taskList"
+        <section id="main-container" class="row">
+            <section id="tasks" class="col-md-3 col-sm-3">
+                <h1 id="task-list-header">{{taskList.length}} Tasks</h1>
+                <div id="task-list">
+                    <task v-for="(task,iterator) in taskList"
                           v-bind:task="task"
+                          v-bind:i="iterator"
                           v-on:remove-task="removeTask"
-                          v-on:select-task="selectTask">
+                          v-on:select-task="selectTask"
+                          key="iterator">
                     </task>
-                </ol>
+                </div>
                 <div id="task-list-end">
-                    <button class="btn btn-success" v-on:click="newTask">Create Task</button>
+                    <button id="new-task" class="btn btn-success" v-on:click="newTask">Make New Task</button>
                 </div>
             </section>
+
+
             <!--Task Details-->
-            <section id="task-details" class="col-md-9 col-sm-9">
-                <section>
-                    <h1>Task Details</h1>
-                    <span>
-                        <input id="cur-task-title" type="text" v-model="selectedTask.title" placeholder="Enter task title" />
-                        <input v-model="selectedTask.locationName" />
-                        <input id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
-                        <input id="date-time-picker" type="datetime-local" v-model="selectedTimeAsString">
-                    </span>
-                    <textarea id="cur-task-desc" v-model="selectedTask.description"></textarea>
+            <section class="col-md-9 col-sm-9">
+                <section id="task-details" class="row">
+                    <!--<div >-->
+                        <h1 class=" task-details-header col-md-12">Task Details:</h1>
+                        <div class="col-md-6">
+                            
+
+                            <input class="cur-task title" type="text" v-model="selectedTask.title" placeholder="Enter task title" />
+                            <input id="date-time-picker" class="cur-task" type="datetime-local" v-model="selectedTimeAsString">
+                            <input class="cur-task location-name" v-model="selectedTask.locationName" placeholder="Enter location name" />
+                            <input class="cur-task address" id="autocomplete" v-model="selectedTask.address" placeholder="Enter address" v-on:focus="geolocate()" type="text" />
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="notes cur-task" v-model="selectedTask.description" placeholder="Enter notes"></textarea>
+                        </div>
+                    <!--</div>-->
                 </section>
                 <!--Map-->
                 <section>
