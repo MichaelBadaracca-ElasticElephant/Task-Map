@@ -1,5 +1,5 @@
 {
-  "name": "exercise1",
+  "name": "task-map",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -7,7 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichaelBadaracca-ElasticElephant/Task-Map.git"
+  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MichaelBadaracca-ElasticElephant/Task-Map/issues"
+  },
+  "homepage": "https://github.com/MichaelBadaracca-ElasticElephant/Task-Map#readme",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
 }
