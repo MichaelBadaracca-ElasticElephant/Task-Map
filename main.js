@@ -138,7 +138,7 @@ var mainAppVm = new Vue( {
         },
         map: function () {
             return new google.maps.Map( document.getElementById( 'map' ), {
-                zoom: 13,
+                zoom: 15,
                 center: { lat: this.taskList[0].lat, lng: this.taskList[0].lng }
             });
         },
@@ -164,7 +164,7 @@ var mainAppVm = new Vue( {
 
             this.directionsDisplay = new google.maps.DirectionsRenderer;
             this.directionsDisplay.setOptions( {
-                suppressMarkers: false,
+                suppressMarkers: true,
                 //draggable: true
                 //markerOptions: new google.maps.markerOptions()
             })
@@ -204,7 +204,7 @@ var mainAppVm = new Vue( {
         makeMarker: function ( task, count ) {
             new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
-                map: this.map,
+                map: this.map, 
                 label: makeMarkerLabel(task,count)
                 //draggable:true
             })
@@ -349,8 +349,27 @@ function formatAMPM( date ) {
 
 function makeMarkerLabel ( task, count ) {
     var time = this.formatAMPM( task.dateTime );
-    var markerLabel = `${count + 1} - ${time} `
-    return markerLabel;
+
+    var titleLength = 7;
+    var abbreviatedTitle = "";
+    if ( task.title.length > titleLength ) {
+        abbreviatedTitle = task.title.substring( 0, titleLength );
+        abbreviatedTitle += "...";
+    }
+
+    var labelText = `${count + 1}. ${time} ${abbreviatedTitle} `
+
+
+    var label = {
+        text: labelText,
+        color: "black",
+        fontWeight: "bold",
+        fontSize: "20px"
+    }
+
+
+
+    return label;
 }
 
 function getMapScript() {

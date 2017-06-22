@@ -9,11 +9,12 @@ var item = Vue.component( 'task', {
                     </div>
                     <div class="task-controls">
                         <button class="glyphicon glyphicon-trash btn btn-danger" v-on:click="removeTask(task)"></button>
-                        <button class="glyphicon glyphicon-pencil btn btn-info" v-on:click=""></button>
+                    
                     </div>
                     
                 </div>
               `,
+        //<button class="glyphicon glyphicon-pencil btn btn-info" v- on:click = "" ></button >
     props: ['task', 'i'],
     data: function () {
         return {}
