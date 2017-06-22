@@ -39,6 +39,7 @@ var item = Vue.component( 'task', {
 var mainAppVm = new Vue( {
     el: '#app',
     data: {
+        previouslySelectedTask: {},
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -47,38 +48,77 @@ var mainAppVm = new Vue( {
         directionsService: null,
         taskList: [
             {
-                id: 1,
-                order:1,
-                title: "Pick Up Package",
-                description: "Pick up package from post office",
-                dateTime: new Date( "2017-06-19T14:45" ),
-                locationName: "Moorehad Post Office",
-                address: "4985 Moorhead Ave, Boulder, CO 80305",
-                lat: 39.9866824,
-                lng: -105.23722179999999,
+                title: "Pick Up Delivery Truck",
+                description: "Pick up delivery truck",
+                dateTime: new Date( "2017-06-22T10:00" ),
+                locationName: "Open Door Brewing Company",
+                address: "2030 Ionosphere St G, Longmont, CO 80504, USA",
+                lat: 40.1343087,
+                lng: -105.10346270000002,
             },
             {
-                id: 2,
-                order:2,
-                title: "Get Beer",
-                description: "Get beer for Micahl's party",
-                dateTime: new Date( "2017-06-19T20:30" ),
+                title: "Hazel's Delivery",
+                description: "5 cases Libertas, 5 cases Over the Moon, 5 cases Hopgave",
+                dateTime: new Date( "2017-06-22T11:00" ),
                 locationName: "Hazel's Beverage World",
                 address: "1955 28th St, Boulder, CO 80301",
                 lat: 40.0207742,
                 lng: -105.26005520000001,
             },
             {
-                id: 3,
-                order:3,
-                title: "Micahl's Party",
-                description: "Micahl's birthday party",
-                dateTime: new Date( "2017-06-19T03:15" ),
-                locationName: "Hapa",
-                address: "1117 Pearl St, Boulder, CO 80302",
-                lat: 40.018063,
-                lng: -105.28089749999998,
-            }
+                title: "Perry's Sales Call",
+                description: "Meet with Steve Lucheck",
+                dateTime: new Date( "2017-06-22T12:30" ),
+                locationName: "Parry's Pizzeria & Bar",
+                address: "100 E 120th Ave, Northglenn, CO 80233, USA",
+                lat: 39.9123284,
+                lng: -104.9869617,
+            },
+            {
+                title: "Petty John's Delivery",
+                description: "10 cases Libertas, 10 cases Hopgave",
+                dateTime: new Date( "2017-06-22T14:00" ),
+                locationName: "Pettyjohn's Liquor and Wine (and Beer!)",
+                address: "613 S Broadway, Boulder, CO 80305, USA",
+                lat: 39.98448500000001,
+                lng: -105.25003600000002,
+            },
+            {
+                title: "Rayback Sales Call",
+                description: "Meet with Janet Blucher",
+                dateTime: new Date( "2017-06-22T15:00" ),
+                locationName: "Rayback Collective",
+                address: "2775 Valmont Rd, Boulder, CO 80304, USA",
+                lat: 40.029514,
+                lng: -105.25940400000002,
+            },
+            {
+                title: "Collaboration Meeting at Odd 13",
+                description: "Meet with head brewer",
+                dateTime: new Date( "2017-06-22T16:30" ),
+                locationName: "Dark Horse",
+                address: "301 E Simpson St, Lafayette, CO 80026, USA",
+                lat: 39.9983913,
+                lng: -105.08785339999997,
+            },
+            {
+                title: "Delivery at Dark Horse",
+                description: "1 1/2 bbl Libertas, 1/6 bbl Over the Moon",
+                dateTime: new Date( "2017-06-22T18:00" ),
+                locationName: "Hazel's Beverage World",
+                address: "2922 Baseline Rd, Boulder, CO 80303, USA",
+                lat: 39.999115,
+                lng: -105.25519229999998,
+            },
+            //{
+            //    title: "Drop Off Delivery Truck",
+            //    description: "Pick up delivery truck",
+            //    dateTime: new Date( "2017-06-22T20:00" ),
+            //    locationName: "Open Door Brewing Company",
+            //    address: "2030 Ionosphere St G, Longmont, CO 80504, USA",
+            //    lat: 40.1343087,
+            //    lng: -105.10346270000002,
+            //},
         ],
     },
 
@@ -127,21 +167,13 @@ var mainAppVm = new Vue( {
             this.drawMap();
         },
         selectedTimeAsString: function () {
-            console.log( "#######" )
-            console.log( "SelectedTimeAsString", this.selectedTimeAsString );
-
-
-
             var dateObj = new Date( this.selectedTimeAsString );
-            console.log( "DateObj", dateObj );
             this.selectedTask.dateTime = dateObj;
-            console.log( "#######" )
             this.sortTasksByTime();
         }
     },
     methods: {
         getMapScript: function () {
-            console.log( "GOT HERE" );
             $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
                 var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=mainAppVm.initMap`;
                 $.getScript( googleMapsApiScript, function () {
@@ -248,13 +280,10 @@ var mainAppVm = new Vue( {
         newTask: function () {
 
             var newTask = {
-                id: this.taskList.length,
                 title: "New Task",
+                selected: true,
                 description: "",
-                date: "",
-                time: "",
                 dateTime: new Date(),
-                duration: 0,
                 locationName: "",
                 address: "",
                 lat: 0,
@@ -285,8 +314,12 @@ var mainAppVm = new Vue( {
     created: function () {
         this.sortTasksByTime()
         this.selectedTask = this.taskList[0];
+        this.selectedTask = this.taskList[0];
         this.selectedTime = this.selectedTask.dateTime;
-        this.getMapScript();
+        
+    },
+    beforeCreate: function () {
+        getMapScript();
     }
 })
 
@@ -298,23 +331,15 @@ function convertDateTimeToLocalString( datetime ) {
     //BUG: for some reason converting to the ISO string is off by 6 hours
     //as a temporary admittedly hacky work around you could subtract six hours before converting
 
-    console.log( "-----------" );
-    console.log( "Datetime", datetime );
-
     var timeZoneOffset = datetime.getTimezoneOffset();
     var timeZoneOffsetInHours = timeZoneOffset / 60;
     var offsetDateTimeInMs = datetime.setHours( datetime.getHours() - timeZoneOffsetInHours );
     var offsetDateTime = new Date( offsetDateTimeInMs )
-    //console.log( "Offset datetime", offsetDateTime);
 
-    console.log( "Timezone Offset", timeZoneOffsetInHours );
     var dateTimeISOString = offsetDateTime.toISOString();
-    //var dateTimeISOString = datetime.toUTCString();
-    console.log( "ISO String", dateTimeISOString )
+
     //this takes something like 1908-03-25T20:45:00.000Z and takes the last character off to make it 1908-03-25T20:45:00.000 which is an acceptable format for the datetime-local picker
     var dateTimeStringFormatted = dateTimeISOString.substring( 0, dateTimeISOString.length - 1 );
-    console.log( "datetimeformattedd", dateTimeStringFormatted );
-    console.log( "-----------" );
     return dateTimeStringFormatted;
 }
 
@@ -323,17 +348,12 @@ function updateLocalTimePicker( datetime ) {
 }
 
 function formatAMPM( date ) {
-    console.log( "DATE",typeof date );
-
-
         //Code modified from this forum: https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
         //TODO: fix timezone offset problem
         //var timeZoneOffset = date.getTimezoneOffset();
         //var timeZoneOffsetInHours = timeZoneOffset / 60;
 
         var hours = date.getHours();
-        //console.log("INITIAL HOURS", date.getHours() );
-        //console.log( "OFFSET HOURS", hours );
 
 
         var minutes = date.getMinutes();
@@ -351,4 +371,20 @@ function makeMarkerLabel ( task, count ) {
     var markerLabel = `${count + 1} - ${time} `
     return markerLabel;
 }
-//update the task time whenever the date is set
+
+function getMapScript() {
+    $.get( "/googleMapsApiKey", function ( googleMapsApiKey ) {
+        var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=mainAppVm.initMap`;
+        $.getScript( googleMapsApiScript, function () {
+            console.log( "Google maps script loaded" );
+            mainAppVm.initAutocomplete();
+        });
+    });
+}
+
+//Set a variable to true on a task when selected
+//When a different task 
+
+
+//Convert local string to date
+//Convert date to local string

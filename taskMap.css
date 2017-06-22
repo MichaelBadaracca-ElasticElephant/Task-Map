@@ -6,7 +6,7 @@
 
 #main-container{
     border: 1px grey solid;
-    background-color:rgba(255,255,255,0.9);
+    background-color:rgba(255,255,255,0.6);
 }
 
 body {
@@ -105,10 +105,10 @@ header{
     border: 1px solid rgba(0,0,0,0.15);
 }
 .title {
-    width: 51%;
+    width: 39%;
 }
 #date-time-picker {
-    width: 48%;
+    width: 60%;
 }
 
 .location-name {
