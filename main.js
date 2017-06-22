@@ -240,21 +240,39 @@ var mainAppVm = new Vue( {
 
         makeMarker: function ( task, count ) {
 
+
+            //make the icon darker, the later in time it is
+            //use rgb to add to the color
+
+            var red = 255;
+            var green = 255;
+            var blue = 255;
+
+            var color = `rgb(${red},${green},${blue})`;
+
+            var multiplier = -40;
+
+            color = `rgb(${red + count * (multiplier + 5)},${green + count * (multiplier+10)},${blue + count * multiplier})`
+
+
             //choose marker icon
             var icon = {
                 path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                 scale: 5,
-                fillColor:"#334D5C",
-                strokeColor: "#334D5C",
-                strokeWeight:3
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: "black",
+                strokeWeight:2
             };
             if ( task.isSelected ) {
                 icon = {
                     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                     scale: 5,
+                    fillColor: color,
+                    fillOpacity: 1,
                     strokeColor: "red",
-                    fillColor: "red",
-                    strokeWeight: 3
+                    
+                    strokeWeight: 2
                 };
             }
 
@@ -262,9 +280,10 @@ var mainAppVm = new Vue( {
                 icon = {
                     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                     scale: 5,
+                    fillColor: color,
+                    fillOpacity: 1,
                     strokeColor: "#3baa2c",
-                    fillColor: "#3baa2c",
-                    strokeWeight: 3
+                    strokeWeight: 2
                 };
             }
 
@@ -272,9 +291,10 @@ var mainAppVm = new Vue( {
                 icon = {
                     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                     scale: 5,
+                    fillColor: color,
+                    fillOpacity: 1,
                     strokeColor: "orange",
-                    fillColor: "orange",
-                    strokeWeight: 3
+                    strokeWeight: 2
                 };
             }  
 
@@ -300,9 +320,11 @@ var mainAppVm = new Vue( {
             });
 
             marker.addListener( 'mousedown', function () {
-
+                
 
                 task.isSelected = true;
+
+                //need to make previously selected marker is selected talks
                 //this.previouslySelectedTask.isSelected = false;
                 
                 //mainAppVm.selectTask( task );
@@ -488,8 +510,8 @@ function makeMarkerLabel ( task, count ) {
     var label = {
         text: labelText,
         color: "black",
-        //fontWeight: "bold",
-        fontSize: "20px"
+        fontWeight: "0px",
+        fontSize: "20px",
     }
     return label;
 }
