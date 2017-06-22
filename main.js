@@ -14,6 +14,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Pick Up Delivery Truck",
                 isSelected: false,
+                isHovered: false,
                 description: "Pick up delivery truck",
                 dateTime: new Date( "2017-06-22T16:00" ),
                 locationName: "Open Door Brewing Company",
@@ -24,6 +25,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Hazel's Delivery",
                 isSelected: false,
+                isHovered: false,
                 description: "5 cases Libertas, 5 cases Over the Moon, 5 cases Hopgave",
                 dateTime: new Date( "2017-06-22T11:00" ),
                 locationName: "Hazel's Beverage World",
@@ -34,6 +36,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Perry's Sales Call",
                 isSelected: false,
+                isHovered: false,
                 description: "Meet with Steve Lucheck",
                 dateTime: new Date( "2017-06-22T12:30" ),
                 locationName: "Parry's Pizzeria & Bar",
@@ -44,6 +47,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Petty John's Delivery",
                 isSelected: false,
+                isHovered: false,
                 description: "10 cases Libertas, 10 cases Hopgave",
                 dateTime: new Date( "2017-06-22T14:00" ),
                 locationName: "Pettyjohn's Liquor and Wine (and Beer!)",
@@ -54,6 +58,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Rayback Sales Call",
                 isSelected: false,
+                isHovered: false,
                 description: "Meet with Janet Blucher",
                 dateTime: new Date( "2017-06-22T15:00" ),
                 locationName: "Rayback Collective",
@@ -64,6 +69,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Collaboration Meeting at Odd 13",
                 isSelected: false,
+                isHovered: false,
                 description: "Meet with head brewer",
                 dateTime: new Date( "2017-06-22T16:30" ),
                 locationName: "Dark Horse",
@@ -74,6 +80,7 @@ var mainAppVm = new Vue( {
             {
                 title: "Delivery at Dark Horse",
                 isSelected: false,
+                isHovered: false,
                 description: "1 1/2 bbl Libertas, 1/6 bbl Over the Moon",
                 dateTime: new Date( "2017-06-22T18:00" ),
                 locationName: "Hazel's Beverage World",
@@ -218,6 +225,13 @@ var mainAppVm = new Vue( {
                     strokeColor: "red",
                     strokeWeight: 3
                 };
+            } else if ( task.isHovered ) {
+                icon = {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 5,
+                    strokeColor: "orange",
+                    strokeWeight: 3
+                };
             }
 
             var marker = new google.maps.Marker( {
@@ -230,6 +244,22 @@ var mainAppVm = new Vue( {
                 label: makeMarkerLabel(task,count)
                 //draggable:true
             })
+
+
+            marker.addListener( 'mouseover', function () {
+                task.isHovered = true;
+            });
+
+            // assuming you also want to hide the infowindow when user mouses-out
+            marker.addListener( 'mouseout', function () {
+                task.isHovered = false;
+            });
+
+            marker.addListener( 'mousedown', function () {
+                task.isSelected = true;
+            });
+
+
             this.makeInfoWindow( marker, task, count );
         },
 

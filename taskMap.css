@@ -42,6 +42,10 @@ body {
 
 /*Interactive Styles*/
 .selected {
+    border: 1px red solid !important;
+}
+
+.hovered {
     border: 1px orange solid !important;
 }
 
