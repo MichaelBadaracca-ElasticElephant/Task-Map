@@ -4,6 +4,7 @@ var mainAppVm = new Vue( {
     data: {
         hasGoogleMapsScriptLoaded: false,
         infowindow: {},
+        previouslySelectedTask: {},
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -257,7 +258,8 @@ var mainAppVm = new Vue( {
 
             marker.addListener( 'mousedown', function () {
                 task.isSelected = true;
-            });
+                //mainAppVm.selectTask( task );
+;            });
 
 
             this.makeInfoWindow( marker, task, count );
@@ -354,6 +356,9 @@ var mainAppVm = new Vue( {
             this.taskList.splice( $.inArray( task, this.taskList ), 1 );
         },
         selectTask: function ( task ) {
+            //this.previouslySelectedTask.isSelected
+
+
             this.selectedTask.isSelected = false;
             this.selectedTask = task;
             this.selectedTask.isSelected = true;

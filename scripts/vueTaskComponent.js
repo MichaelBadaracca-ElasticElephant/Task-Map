@@ -1,6 +1,6 @@
 var item = Vue.component( 'task', {
     template: `
-                <div class="task-in-list" v-on:click="selectTask(task)" v-bind:class='{selected:task.isSelected}' v-bind:class='{hovered:task.isHovered}'>          
+                <div class="task-in-list" v-on:click="selectTask(task)" v-on:mouseover="task.isHovered=true" v-on:mouseout="task.isHovered=false" v-bind:class='{selected:task.isSelected, hovered:task.isHovered}'>          
                     <h2>{{i + 1}}. {{task.title}}</h2>    
                     <div class="task-info">
                         <h4>{{time()}} on {{task.dateTime.toDateString()}}</h4>
