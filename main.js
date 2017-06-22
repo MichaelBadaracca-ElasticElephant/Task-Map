@@ -417,7 +417,9 @@ var mainAppVm = new Vue( {
                 lat: 0,
                 lng: 0
             };
+            this.selectedTask.isSelected = false;
             this.taskList.unshift( newTask );
+            
             this.selectedTask = newTask;
             updateLocalTimePicker( mainAppVm.selectedTask.dateTime );
 
