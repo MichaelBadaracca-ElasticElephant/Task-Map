@@ -3,6 +3,7 @@ var mainAppVm = new Vue( {
     el: '#app',
     data: {
         hasGoogleMapsScriptLoaded: false,
+        infowindow: {},
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -225,13 +226,9 @@ var mainAppVm = new Vue( {
                     </div>
                 </div>`
 
-
-            var infowindow = new google.maps.InfoWindow( {
-                content: infoWindowTemplate
-            });
-
-            marker.addListener( 'click', function () {
-                infowindow.open( map, marker );
+            google.maps.event.addListener( marker, 'click', function () {
+                infowindow.setContent( infoWindowTemplate );
+                infowindow.open( map, this );
             });
 
         },
@@ -328,7 +325,7 @@ var mainAppVm = new Vue( {
 
 
 //****************** END OF VUE ******************
-
+var infowindow = {};
 
 $( document ).ready( function () {
     updateLocalTimePicker( mainAppVm.selectedTask.dateTime );
@@ -405,6 +402,9 @@ function getMapScript() {
             console.log( "Google maps script loaded" );
             mainAppVm.hasGoogleMapsScriptLoaded = true;
             mainAppVm.initAutocomplete();
+            infowindow = new google.maps.InfoWindow( {
+                content: "Hello"
+            });
         });
     });
 }
