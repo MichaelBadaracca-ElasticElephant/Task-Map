@@ -2,6 +2,7 @@
 var mainAppVm = new Vue( {
     el: '#app',
     data: {
+        hasGoogleMapsScriptLoaded: false,
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -13,7 +14,7 @@ var mainAppVm = new Vue( {
                 title: "Pick Up Delivery Truck",
                 isSelected: false,
                 description: "Pick up delivery truck",
-                dateTime: new Date( "2017-06-22T10:00" ),
+                dateTime: new Date( "2017-06-22T16:00" ),
                 locationName: "Open Door Brewing Company",
                 address: "2030 Ionosphere St G, Longmont, CO 80504, USA",
                 lat: 40.1343087,
@@ -83,35 +84,57 @@ var mainAppVm = new Vue( {
     },
 
     computed: {
+
+        //make map data the list of marker and waypoitns as data
+        //it gets this information from the tasks
+        //a watcher watches this infomration
+
+
         mapData: function () {
-            var mapMarkers = [];
-            var points = [];
 
-            for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
-                var task = this.taskList[taskCount];
-                //create a marker
-                //mapMarkers.push( this.makeMarker( task, taskCount ) );
 
-                //create a waypoint if there are valid coordinates
-                //TODO: have a more rigorious test on whether the coordinates are valid
-                //Google seems to be able to tell when it give a popup saying they are invalid
-                if ( task.lat !== 0 && task.lng !== 0 ) {
-                    var wayPoint = {
-                        location: { lat: task.lat, lng: task.lng },
-                        stopover: true
+            console.log( this.taskList );
+
+            if ( this.hasGoogleMapsScriptLoaded ) {
+                console.log("Maps Loaded now")
+
+
+                var mapMarkers = [];
+                var points = [];
+
+                for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
+                    var task = this.taskList[taskCount];
+                    //create a marker
+                    //mapMarkers.push( this.makeMarker( task, taskCount ) );
+                    this.makeMarker( task, taskCount );
+
+
+                    //create a waypoint if there are valid coordinates
+                    //TODO: have a more rigorious test on whether the coordinates are valid
+                    //Google seems to be able to tell when it give a popup saying they are invalid
+                    if ( task.lat !== 0 && task.lng !== 0 ) {
+                        var wayPoint = {
+                            location: { lat: task.lat, lng: task.lng },
+                            stopover: true
+                        }
+                        points.push( wayPoint );
                     }
-                    points.push( wayPoint );
                 }
-            }
 
-            //first marker is the start, last marker is the end, everything inbetween is a waypoint
-            var routeInfo = {
-                startingPoint: points[0].location,
-                endingPoint: points[points.length - 1].location,
-                //The waypoints include everything but the first and last points
-                wayPoints: points.slice( 1, points.length - 1 ),
+                //first marker is the start, last marker is the end, everything inbetween is a waypoint
+                var routeInfo = {
+                    startingPoint: points[0].location,
+                    endingPoint: points[points.length - 1].location,
+                    //The waypoints include everything but the first and last points
+                    wayPoints: points.slice( 1, points.length - 1 ),
+                }
+
+                
+                return routeInfo;
+            } else {
+                console.log( "Maps not loaded yet" )
+                return false;
             }
-            return routeInfo;
         },
         map: function () {
             return new google.maps.Map( document.getElementById( 'map' ), {
@@ -124,12 +147,15 @@ var mainAppVm = new Vue( {
         // whenever question changes, this function will run
         mapData: function () {
             console.log( "Refreshing map" )
-            this.drawMap();
+            this.drawRoute();
         },
         selectedTimeAsString: function () {
             var dateObj = new Date( this.selectedTimeAsString );
             this.selectedTask.dateTime = dateObj;
             this.sortTasksByTime();
+        },
+        hasGoogleMapsScriptLoaded: function () {
+            console.log( "VALUE CHANGED", this.hasGoogleMapsScriptLoaded )
         }
     },
     methods: {
@@ -144,14 +170,17 @@ var mainAppVm = new Vue( {
             })
             this.directionsService = new google.maps.DirectionsService;
             this.directionsDisplay.setMap( this.map );
-            this.drawMap();
+            //this.drawRoute();
         },
 
-        drawMap: function () {
+        drawRoute: function () {
+           
             this.calculateAndDisplayRoute( this.directionsService, this.directionsDisplay, this.mapData );
         },
 
         calculateAndDisplayRoute: function ( directionsService, directionsDisplay, mapData ) {
+
+            console.log( "MAP DATA", mapData )
             var selectedMode = "DRIVING"
             directionsService.route( {
                 origin: mapData.startingPoint,
@@ -161,12 +190,17 @@ var mainAppVm = new Vue( {
                 travelMode: google.maps.TravelMode[selectedMode]
             }, function ( response, status ) {
                 if ( status == 'OK' ) {
+
+                    console.log( "RESPONSE", response );
                     directionsDisplay.setDirections( response );
+
+                    directionsDisplay.setMap( mainAppVm.map );
                 } else {
                     window.alert( 'Directions request failed due to ' + status );
                 }
             });
         },
+
         makeMarker: function ( task, count ) {
             new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
@@ -254,6 +288,7 @@ var mainAppVm = new Vue( {
         },
     },
     created: function () {
+        console.log( "created" );
         this.sortTasksByTime()
         this.selectedTask = this.taskList[0];
         this.selectedTask = this.taskList[0];
@@ -323,6 +358,7 @@ function getMapScript() {
         var googleMapsApiScript = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=mainAppVm.initMap`;
         $.getScript( googleMapsApiScript, function () {
             console.log( "Google maps script loaded" );
+            mainAppVm.hasGoogleMapsScriptLoaded = true;
             mainAppVm.initAutocomplete();
         });
     });
