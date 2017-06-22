@@ -1,6 +1,6 @@
 var item = Vue.component( 'task', {
     template: `
-                <div class="task-in-list" v-on:click="selectTask(task)">          
+                <div class="task-in-list" v-on:click="selectTask(task)" v-bind:class='{selected:task.isSelected}'>          
                     <h2>{{i + 1}}. {{task.title}}</h2>    
                     <div class="task-info">
                         <h4>{{time()}} on {{task.dateTime.toDateString()}}</h4>
@@ -39,7 +39,6 @@ var item = Vue.component( 'task', {
 var mainAppVm = new Vue( {
     el: '#app',
     data: {
-        previouslySelectedTask: {},
         selectedTask: {},
         selectedTimeAsString: "",
         placesSearch: {},
@@ -49,6 +48,7 @@ var mainAppVm = new Vue( {
         taskList: [
             {
                 title: "Pick Up Delivery Truck",
+                isSelected: false,
                 description: "Pick up delivery truck",
                 dateTime: new Date( "2017-06-22T10:00" ),
                 locationName: "Open Door Brewing Company",
@@ -58,6 +58,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Hazel's Delivery",
+                isSelected: false,
                 description: "5 cases Libertas, 5 cases Over the Moon, 5 cases Hopgave",
                 dateTime: new Date( "2017-06-22T11:00" ),
                 locationName: "Hazel's Beverage World",
@@ -67,6 +68,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Perry's Sales Call",
+                isSelected: false,
                 description: "Meet with Steve Lucheck",
                 dateTime: new Date( "2017-06-22T12:30" ),
                 locationName: "Parry's Pizzeria & Bar",
@@ -76,6 +78,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Petty John's Delivery",
+                isSelected: false,
                 description: "10 cases Libertas, 10 cases Hopgave",
                 dateTime: new Date( "2017-06-22T14:00" ),
                 locationName: "Pettyjohn's Liquor and Wine (and Beer!)",
@@ -85,6 +88,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Rayback Sales Call",
+                isSelected: false,
                 description: "Meet with Janet Blucher",
                 dateTime: new Date( "2017-06-22T15:00" ),
                 locationName: "Rayback Collective",
@@ -94,6 +98,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Collaboration Meeting at Odd 13",
+                isSelected: false,
                 description: "Meet with head brewer",
                 dateTime: new Date( "2017-06-22T16:30" ),
                 locationName: "Dark Horse",
@@ -103,6 +108,7 @@ var mainAppVm = new Vue( {
             },
             {
                 title: "Delivery at Dark Horse",
+                isSelected: false,
                 description: "1 1/2 bbl Libertas, 1/6 bbl Over the Moon",
                 dateTime: new Date( "2017-06-22T18:00" ),
                 locationName: "Hazel's Beverage World",
@@ -110,15 +116,6 @@ var mainAppVm = new Vue( {
                 lat: 39.999115,
                 lng: -105.25519229999998,
             },
-            //{
-            //    title: "Drop Off Delivery Truck",
-            //    description: "Pick up delivery truck",
-            //    dateTime: new Date( "2017-06-22T20:00" ),
-            //    locationName: "Open Door Brewing Company",
-            //    address: "2030 Ionosphere St G, Longmont, CO 80504, USA",
-            //    lat: 40.1343087,
-            //    lng: -105.10346270000002,
-            //},
         ],
     },
 
@@ -299,16 +296,10 @@ var mainAppVm = new Vue( {
             this.taskList.splice( $.inArray( task, this.taskList ), 1 );
         },
         selectTask: function ( task ) {
+            this.selectedTask.isSelected = false;
             this.selectedTask = task;
-            //Update selected time as string for date picker
-            console.log( "*************" )
-            console.log( "Tasks Time", this.selectedTask.dateTime );
-            //console.log( "Tasks time as string", convertDateTimeToLocalString( this.selectedTask.dateTime ) )
-
-
+            this.selectedTask.isSelected = true;
             this.selectedTimeAsString = convertDateTimeToLocalString( this.selectedTask.dateTime );
-            console.log( "*************" )
-
         },
     },
     created: function () {

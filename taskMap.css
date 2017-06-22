@@ -1,5 +1,7 @@
 /*General Styles*/
 
+
+
 .green-color {
     background-color: #CBE6A3;
 }
@@ -37,12 +39,14 @@ body {
     background-color:rgba(255,255,255,0.7);
 }
 
-/*#app {
-    margin-top:5vh;
+
+/*Interactive Styles*/
+.selected {
+    border: 1px orange solid !important;
 }
-header{
-    height:5vh;
-}*/
+
+
+
 /*Task List*/
 
 #task-list{
