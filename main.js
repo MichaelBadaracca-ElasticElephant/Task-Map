@@ -16,6 +16,7 @@ var mainAppVm = new Vue( {
                 title: "Pick Up Delivery Truck",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "Pick up delivery truck",
                 dateTime: new Date( "2017-06-22T16:00" ),
                 locationName: "Open Door Brewing Company",
@@ -27,6 +28,7 @@ var mainAppVm = new Vue( {
                 title: "Hazel's Delivery",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "5 cases Libertas, 5 cases Over the Moon, 5 cases Hopgave",
                 dateTime: new Date( "2017-06-22T11:00" ),
                 locationName: "Hazel's Beverage World",
@@ -38,6 +40,7 @@ var mainAppVm = new Vue( {
                 title: "Perry's Sales Call",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "Meet with Steve Lucheck",
                 dateTime: new Date( "2017-06-22T12:30" ),
                 locationName: "Parry's Pizzeria & Bar",
@@ -49,6 +52,7 @@ var mainAppVm = new Vue( {
                 title: "Petty John's Delivery",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "10 cases Libertas, 10 cases Hopgave",
                 dateTime: new Date( "2017-06-22T14:00" ),
                 locationName: "Pettyjohn's Liquor and Wine (and Beer!)",
@@ -60,6 +64,7 @@ var mainAppVm = new Vue( {
                 title: "Rayback Sales Call",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "Meet with Janet Blucher",
                 dateTime: new Date( "2017-06-22T15:00" ),
                 locationName: "Rayback Collective",
@@ -71,6 +76,7 @@ var mainAppVm = new Vue( {
                 title: "Collaboration Meeting at Odd 13",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "Meet with head brewer",
                 dateTime: new Date( "2017-06-22T16:30" ),
                 locationName: "Dark Horse",
@@ -82,6 +88,7 @@ var mainAppVm = new Vue( {
                 title: "Delivery at Dark Horse",
                 isSelected: false,
                 isHovered: false,
+                isCompleted: false,
                 description: "1 1/2 bbl Libertas, 1/6 bbl Over the Moon",
                 dateTime: new Date( "2017-06-22T18:00" ),
                 locationName: "Hazel's Beverage World",
@@ -103,9 +110,6 @@ var mainAppVm = new Vue( {
             console.log( this.taskList );
 
             if ( this.hasGoogleMapsScriptLoaded ) {
-                console.log( "Maps Loaded now" )
-
-
                 var mapMarkers = [];
                 var points = [];
 
@@ -240,7 +244,8 @@ var mainAppVm = new Vue( {
             var icon = {
                 path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                 scale: 5,
-                strokeColor: "blue",
+                fillColor:"#334D5C",
+                strokeColor: "#334D5C",
                 strokeWeight:3
             };
             if ( task.isSelected ) {
@@ -248,16 +253,30 @@ var mainAppVm = new Vue( {
                     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                     scale: 5,
                     strokeColor: "red",
+                    fillColor: "red",
                     strokeWeight: 3
                 };
-            } else if ( task.isHovered ) {
+            }
+
+            if ( task.isCompleted ) {
+                icon = {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 5,
+                    strokeColor: "#3baa2c",
+                    fillColor: "#3baa2c",
+                    strokeWeight: 3
+                };
+            }
+
+            if ( task.isHovered ) {
                 icon = {
                     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
                     scale: 5,
                     strokeColor: "orange",
+                    fillColor: "orange",
                     strokeWeight: 3
                 };
-            }
+            }  
 
             var marker = new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
@@ -366,7 +385,9 @@ var mainAppVm = new Vue( {
 
             var newTask = {
                 title: "New Task",
-                selected: true,
+                isSelected: true,
+                isHovered: false,
+                isCompleted: false,
                 description: "",
                 dateTime: new Date(),
                 locationName: "",
@@ -374,8 +395,9 @@ var mainAppVm = new Vue( {
                 lat: 0,
                 lng: 0
             };
-            this.taskList.push( newTask );
+            this.taskList.unshift( newTask );
             this.selectedTask = newTask;
+            updateLocalTimePicker( mainAppVm.selectedTask.dateTime );
 
             //create new task and push onto array
             //make it the selected task
@@ -468,7 +490,7 @@ function makeMarkerLabel ( task, count ) {
     var label = {
         text: labelText,
         color: "black",
-        fontWeight: "bold",
+        //fontWeight: "bold",
         fontSize: "20px"
     }
     return label;

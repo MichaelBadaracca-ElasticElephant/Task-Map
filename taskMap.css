@@ -41,13 +41,19 @@ body {
 
 
 /*Interactive Styles*/
+
 .selected {
-    border: 1px red solid !important;
+    outline: 2px red solid !important;
+}
+.completed {
+    outline: 2px #3baa2c solid !important;
 }
 
+
 .hovered {
-    border: 1px orange solid !important;
+    outline: 2px orange solid !important;
 }
+
 
 /*Task List*/
 #task-list{
