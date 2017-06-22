@@ -406,11 +406,9 @@ var mainAppVm = new Vue( {
             this.taskList.splice( $.inArray( task, this.taskList ), 1 );
         },
         selectTask: function ( task ) {
-            //this.previouslySelectedTask.isSelected
-
-
-            this.selectedTask.isSelected = false;
+            this.previouslySelectedTask = this.selectedTask;
             this.selectedTask = task;
+            this.previouslySelectedTask.isSelected = false;
             this.selectedTask.isSelected = true;
             this.selectedTimeAsString = convertDateTimeToLocalString( this.selectedTask.dateTime );
         },
