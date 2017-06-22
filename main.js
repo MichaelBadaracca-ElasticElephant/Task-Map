@@ -97,9 +97,34 @@ var mainAppVm = new Vue( {
         //make map data the list of marker and waypoitns as data
         //it gets this information from the tasks
         //a watcher watches this infomration
+        markerData: function () {
 
 
-        mapData: function () {
+            console.log( this.taskList );
+
+            if ( this.hasGoogleMapsScriptLoaded ) {
+                console.log( "Maps Loaded now" )
+
+
+                var mapMarkers = [];
+                var points = [];
+
+                for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
+                    var task = this.taskList[taskCount];
+                    //create a marker
+                    //mapMarkers.push( this.makeMarker( task, taskCount ) );
+                    this.makeMarker( task, taskCount );
+
+                }
+
+                return "";
+            } else {
+                console.log( "Maps not loaded yet" )
+                return false;
+            }
+        },
+
+        routeData: function () {
 
 
             console.log( this.taskList );
@@ -113,10 +138,6 @@ var mainAppVm = new Vue( {
 
                 for ( var taskCount = 0; taskCount < this.taskList.length; taskCount++ ) {
                     var task = this.taskList[taskCount];
-                    //create a marker
-                    //mapMarkers.push( this.makeMarker( task, taskCount ) );
-                    this.makeMarker( task, taskCount );
-
 
                     //create a waypoint if there are valid coordinates
                     //TODO: have a more rigorious test on whether the coordinates are valid
@@ -154,9 +175,12 @@ var mainAppVm = new Vue( {
     },
     watch: {
         // whenever question changes, this function will run
-        mapData: function () {
+        routeData: function () {
             console.log( "Refreshing map" )
             this.drawRoute();
+        },
+        markerData: function () {
+            this.directionsDisplay.setMap( this.map );
         },
         selectedTimeAsString: function () {
             var dateObj = new Date( this.selectedTimeAsString );
@@ -184,17 +208,17 @@ var mainAppVm = new Vue( {
 
         drawRoute: function () {
            
-            this.calculateAndDisplayRoute( this.directionsService, this.directionsDisplay, this.mapData );
+            this.calculateAndDisplayRoute( this.directionsService, this.directionsDisplay, this.routeData );
         },
 
-        calculateAndDisplayRoute: function ( directionsService, directionsDisplay, mapData ) {
+        calculateAndDisplayRoute: function ( directionsService, directionsDisplay, routeData ) {
 
-            console.log( "MAP DATA", mapData )
+            console.log( "MAP DATA", routeData )
             var selectedMode = "DRIVING"
             directionsService.route( {
-                origin: mapData.startingPoint,
-                destination: mapData.endingPoint,
-                waypoints: mapData.wayPoints,
+                origin: routeData.startingPoint,
+                destination: routeData.endingPoint,
+                waypoints: routeData.wayPoints,
                 optimizeWaypoints: false,
                 travelMode: google.maps.TravelMode[selectedMode]
             }, function ( response, status ) {
@@ -239,7 +263,7 @@ var mainAppVm = new Vue( {
                 position: { lat: task.lat, lng: task.lng },
                 anchorPoint: { x: 0, y: -5 },
                 map: this.map, 
-                title: task.title,
+                //title: task.title,
                 //icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
                 icon: icon,
                 label: makeMarkerLabel(task,count)
@@ -257,7 +281,11 @@ var mainAppVm = new Vue( {
             });
 
             marker.addListener( 'mousedown', function () {
+
+
                 task.isSelected = true;
+                //this.previouslySelectedTask.isSelected = false;
+                
                 //mainAppVm.selectTask( task );
 ;            });
 
