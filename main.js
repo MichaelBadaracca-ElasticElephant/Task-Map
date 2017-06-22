@@ -203,10 +203,30 @@ var mainAppVm = new Vue( {
         },
 
         makeMarker: function ( task, count ) {
+
+            //choose marker icon
+            var icon = {
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                scale: 5,
+                strokeColor: "blue",
+                strokeWeight:3
+            };
+            if ( task.isSelected ) {
+                icon = {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 5,
+                    strokeColor: "red",
+                    strokeWeight: 3
+                };
+            }
+
             var marker = new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
+                anchorPoint: { x: 0, y: -5 },
                 map: this.map, 
-                title:"TEST",
+                title: task.title,
+                //icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                icon: icon,
                 label: makeMarkerLabel(task,count)
                 //draggable:true
             })
@@ -373,6 +393,7 @@ function formatAMPM( date ) {
 function makeMarkerLabel ( task, count ) {
     var time = this.formatAMPM( task.dateTime );
 
+    //Make the title abbreviated after a certain length
     var titleLength = 7;
     var abbreviatedTitle = "";
     if ( task.title.length > titleLength ) {
@@ -381,17 +402,12 @@ function makeMarkerLabel ( task, count ) {
     }
 
     var labelText = `${count + 1}. ${time} ${abbreviatedTitle} `
-
-
     var label = {
         text: labelText,
         color: "black",
         fontWeight: "bold",
         fontSize: "20px"
     }
-
-
-
     return label;
 }
 
@@ -408,10 +424,3 @@ function getMapScript() {
         });
     });
 }
-
-//Set a variable to true on a task when selected
-//When a different task 
-
-
-//Convert local string to date
-//Convert date to local string
