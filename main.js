@@ -202,12 +202,38 @@ var mainAppVm = new Vue( {
         },
 
         makeMarker: function ( task, count ) {
-            new google.maps.Marker( {
+            var marker = new google.maps.Marker( {
                 position: { lat: task.lat, lng: task.lng },
                 map: this.map, 
+                title:"TEST",
                 label: makeMarkerLabel(task,count)
                 //draggable:true
             })
+            this.makeInfoWindow( marker, task, count );
+        },
+
+        makeInfoWindow: function ( marker, task, count ) {
+
+            var infoWindowTemplate = 
+                `<div class="task-in-list" v-on:click="selectTask(task)" v-bind:class='{selected:task.isSelected}'>          
+                    <h2>${count+1}. ${task.title}</h2>    
+                    <div class="task-info">
+                        <h4>${formatAMPM( task.dateTime)} on ${task.dateTime.toDateString()}</h4>
+                        <h4>${task.locationName}</h4>
+                        <h4>${task.address}</h4>
+                        <p>${task.description}</p>
+                    </div>
+                </div>`
+
+
+            var infowindow = new google.maps.InfoWindow( {
+                content: infoWindowTemplate
+            });
+
+            marker.addListener( 'click', function () {
+                infowindow.open( map, marker );
+            });
+
         },
         
         //*** MAPS END ***
