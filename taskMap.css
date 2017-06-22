@@ -45,10 +45,7 @@ body {
     border: 1px orange solid !important;
 }
 
-
-
 /*Task List*/
-
 #task-list{
     height:73vh;
     overflow-y:scroll;
