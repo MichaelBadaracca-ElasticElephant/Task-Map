@@ -26,4 +26,4 @@ app.get( "/googleMapsApiKey", function ( req, res ) {
 //TODO: Make a 404 route
 //TODO: Make a 500 error route
 
-app.listen( 3000 );
+app.listen( 80 );
